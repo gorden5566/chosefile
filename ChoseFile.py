@@ -1,4 +1,5 @@
 import os
+
 import wx
 
 
@@ -11,8 +12,8 @@ class ChoseFile(wx.Frame):
         # create a menu bar
         self.MakeMenuBar()
 
-        self.CreateStatusBar()
-        self.SetStatusText("欢迎使用" + self.GetVersion())
+        # status bar
+        self.MakeStatusBar()
 
     def MakePanel(self):
         # 选择文件按钮
@@ -50,55 +51,62 @@ class ChoseFile(wx.Frame):
 
     # 生成菜单
     def MakeMenuBar(self):
-        # Make a file menu with Hello and Exit items
-        fileMenu = wx.Menu()
-        # The "\t..." syntax defines an accelerator key that also triggers
-        # the same event
-        openItem = fileMenu.Append(-1, "&打开\tCtrl-O", "打开要处理的Excel文件")
-        fileMenu.AppendSeparator()
-
-        # When using a stock ID we don't need to specify the menu item's
-        # label
-        # exitItem = fileMenu.Append(wx.ID_EXIT)
-        exitItem = fileMenu.Append(-1, "&退出\tCtrl-Q", "退出")
-
-        # Now a help menu for the about item
-        helpMenu = wx.Menu()
-        # aboutItem = helpMenu.Append(wx.ID_ABOUT)
-        aboutItem = helpMenu.Append(-1, "&关于", "关于")
-
         # Make the menu bar and add the two menus to it. The '&' defines
         # that the next letter is the "mnemonic" for the menu item. On the
         # platforms that support it those letters are underlined and can be
         # triggered from the keyboard.
         menuBar = wx.MenuBar()
-        menuBar.Append(fileMenu, "&文件")
-        menuBar.Append(helpMenu, "&帮助")
+        menuBar.Append(self.MakeFileMenu(), "&文件")
+        menuBar.Append(self.MakeHelpMenu(), "&帮助")
 
         # Give the menu bar to the frame
         self.SetMenuBar(menuBar)
 
+    # 文件菜单
+    def MakeFileMenu(self):
+        fileMenu = wx.Menu()
+
+        # The "\t..." syntax defines an accelerator key that also triggers
+        # the same event
+        openItem = fileMenu.Append(-1, "&打开\tCtrl-O", "打开要处理的Excel文件")
+        fileMenu.AppendSeparator()
+
+        exitItem = fileMenu.Append(-1, "&退出\tCtrl-Q", "退出")
+
         # Associate a handler function with the EVT_MENU event for each of the menu items.
         self.Bind(wx.EVT_MENU, self.OnOpen, openItem)
         self.Bind(wx.EVT_MENU, self.OnExit, exitItem)
+
+        return fileMenu
+
+    # 帮助菜单
+    def MakeHelpMenu(self):
+        helpMenu = wx.Menu()
+        # aboutItem = helpMenu.Append(wx.ID_ABOUT)
+        aboutItem = helpMenu.Append(-1, "&关于", "关于")
         self.Bind(wx.EVT_MENU, self.OnAbout, aboutItem)
+
+        return helpMenu
 
     # 关于菜单
     def OnAbout(self, event):
         """Display an About Dialog"""
-        wx.MessageBox("这是一个简单的选图工具",
-                      self.GetVersion(),
-                      wx.OK | wx.ICON_INFORMATION)
+        wx.MessageBox("这是一个简单的选图工具", self.GetVersion(), wx.OK | wx.ICON_INFORMATION)
+
+    # 状态栏
+    def MakeStatusBar(self):
+        self.CreateStatusBar()
+        self.SetStatusText("欢迎使用" + self.GetVersion())
 
     # 版本号
     def GetVersion(self):
-        return "选图工具 V0.0.1"
+        return "ChoseFile V0.0.1"
 
 
 if __name__ == '__main__':
     app = wx.App()
 
-    SiteFrame = ChoseFile()
-    SiteFrame.Show()
+    frame = ChoseFile()
+    frame.Show()
 
     app.MainLoop()
