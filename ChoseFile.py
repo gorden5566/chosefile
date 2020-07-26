@@ -49,15 +49,22 @@ class ChoseFile(wx.Frame):
 
     # 解析文件
     def OnReadFile(self, event):
+        fileName = self.FileName.GetValue()
+        if not os.path.exists(fileName):
+            wx.MessageBox("请先选择文件", "处理结果", wx.OK | wx.ICON_WARNING)
+            return
+
         file = open(self.FileName.GetValue())
         self.ConsoleContent.SetValue(file.read())
         file.close()
 
     def OnProcess(self, event):
+        wx.MessageBox("共处理24个文件", "处理结果", wx.OK | wx.ICON_INFORMATION)
         return
 
     def OnClearConsoleContent(self, event):
         self.ConsoleContent.SetValue("")
+        wx.MessageBox("已清空", "处理结果", wx.OK | wx.ICON_INFORMATION)
 
     # 退出菜单
     def OnExit(self, event):
