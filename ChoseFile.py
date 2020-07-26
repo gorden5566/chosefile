@@ -1,13 +1,14 @@
 import os
+import shutil
 
 import wx
 import xlwt
-import shutil
 
 
 class ChoseFile(wx.Frame):
     def __init__(self):
-        super().__init__(parent=None, title='选图工具', size=(640, 480))
+        super().__init__(parent=None, title='选图工具', size=(640, 480),
+                         style=wx.RESIZE_BORDER | wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX | wx.CLIP_CHILDREN)
 
         self.MakePanel()
 
