@@ -30,17 +30,21 @@ class Tools:
     def copyfile(self, sourceDir, targetDir, fileName):
         if not os.path.isdir(sourceDir):
             print("源文件夹不存在")
+            return False
 
         if not os.path.isdir(targetDir):
             print("目标文件夹不存在")
+            return False
 
         sourceName = os.path.join(sourceDir, fileName)
         targetName = os.path.join(targetDir, fileName)
         if not os.path.exists(sourceName):
             print("源文件不存在：" + sourceName)
+            return False
 
         st.copyfile(sourceName, targetName)
         print('成功复制：' + targetName)
+        return True
 
     # 读取配置文件
     def getConfig(self, configName):
