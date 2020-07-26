@@ -2,6 +2,7 @@ import os
 
 import wx
 import xlwt
+import shutil
 
 
 class ChoseFile(wx.Frame):
@@ -181,6 +182,28 @@ class ChoseFile(wx.Frame):
     # 版本号
     def GetVersion(self):
         return "ChoseFile V0.0.1"
+
+    # 复制文件
+    def Copyfile(self, source, target, fileName):
+        if not os.path.isdir(source):
+            print("源文件夹不存在")
+            return
+
+        if not os.path.isdir(target):
+            print("目标文件夹不存在")
+            return
+
+        sourceName = os.path.join(source, fileName)
+        targetName = os.path.join(target, fileName)
+        if not os.path.exists(sourceName):
+            print("源文件不存在：" + sourceName)
+            return
+
+        try:
+            shutil.copyfile(sourceName, targetName)
+            print('成功复制：' + targetName)
+        except Exception:
+            print("复制失败")
 
 
 if __name__ == '__main__':
