@@ -1,7 +1,6 @@
 import os
 
 import wx
-
 import xlwt
 
 
@@ -110,20 +109,27 @@ class ChoseFile(wx.Frame):
     def MakeTemplateMenu(self):
         templateMenu = wx.Menu()
 
+        settingItem = templateMenu.Append(-1, "&设置\tCtrl-,", "模板参数设置")
+        self.Bind(wx.EVT_MENU, self.OnSettingTemplate, settingItem)
+
         exportItem = templateMenu.Append(-1, "&导出\tCtrl-E", "导出模板文件")
         self.Bind(wx.EVT_MENU, self.OnExportTemplate, exportItem)
 
         return templateMenu
 
+    # 模板设置
+    def OnSettingTemplate(self, event):
+        pass
+
     # 帮助菜单
     def MakeHelpMenu(self):
         helpMenu = wx.Menu()
 
-        aboutItem = helpMenu.Append(-1, "&关于", "关于")
-        self.Bind(wx.EVT_MENU, self.OnAbout, aboutItem)
-
         usageItem = helpMenu.Append(-1, "&说明\tCtrl-H", "查看使用说明")
         self.Bind(wx.EVT_MENU, self.OnUsage, usageItem)
+
+        aboutItem = helpMenu.Append(-1, "&关于", "关于")
+        self.Bind(wx.EVT_MENU, self.OnAbout, aboutItem)
 
         return helpMenu
 
