@@ -24,11 +24,15 @@ class ChoseFile(wx.Frame):
         self.FileName = wx.TextCtrl(self, pos=(105, 10), size=(400, 25), style=wx.TE_READONLY)
 
         # 读取文件
-        self.SelBtn = wx.Button(self, label='执行', pos=(10, 40), size=(80, 25))
+        self.SelBtn = wx.Button(self, label='解析', pos=(10, 40), size=(80, 25))
         self.SelBtn.Bind(wx.EVT_BUTTON, self.OnReadFile)
 
+        # 处理文件
+        self.ProcessBtn = wx.Button(self, label='处理', pos=(105, 40), size=(80, 25))
+        self.ProcessBtn.Bind(wx.EVT_BUTTON, self.OnProcess)
+
         # 清空控制台日志
-        self.ClearBtn = wx.Button(self, label='清空日志', pos=(105, 40), size=(80, 25))
+        self.ClearBtn = wx.Button(self, label='清空日志', pos=(200, 40), size=(80, 25))
         self.ClearBtn.Bind(wx.EVT_BUTTON, self.OnClearConsoleContent)
 
         # 控制台
@@ -43,10 +47,14 @@ class ChoseFile(wx.Frame):
             self.FileName.SetValue(dialog.GetPath())
             dialog.Destroy
 
+    # 解析文件
     def OnReadFile(self, event):
         file = open(self.FileName.GetValue())
         self.ConsoleContent.SetValue(file.read())
         file.close()
+
+    def OnProcess(self, event):
+        return
 
     def OnClearConsoleContent(self, event):
         self.ConsoleContent.SetValue("")
