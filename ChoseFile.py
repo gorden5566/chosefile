@@ -2,6 +2,8 @@ import os
 
 import wx
 
+import xlwt
+
 
 class ChoseFile(wx.Frame):
     def __init__(self):
@@ -91,6 +93,8 @@ class ChoseFile(wx.Frame):
         # The "\t..." syntax defines an accelerator key that also triggers
         # the same event
         openItem = fileMenu.Append(-1, "&打开\tCtrl-O", "打开要处理的Excel文件")
+
+        # 分隔符
         fileMenu.AppendSeparator()
 
         exitItem = fileMenu.Append(-1, "&退出\tCtrl-Q", "退出")
@@ -104,7 +108,13 @@ class ChoseFile(wx.Frame):
     # 帮助菜单
     def MakeHelpMenu(self):
         helpMenu = wx.Menu()
-        # aboutItem = helpMenu.Append(wx.ID_ABOUT)
+
+        templateItem = helpMenu.Append(-1, "&导出模板\tCtrl-T", "导出模板文件")
+        self.Bind(wx.EVT_MENU, self.OnTemplate, templateItem)
+
+        # 分隔符
+        helpMenu.AppendSeparator()
+
         aboutItem = helpMenu.Append(-1, "&关于", "关于")
         self.Bind(wx.EVT_MENU, self.OnAbout, aboutItem)
 
@@ -113,9 +123,38 @@ class ChoseFile(wx.Frame):
 
         return helpMenu
 
+    # 导出模板文件
+    def OnTemplate(self, event):
+        fd = wx.FileDialog(self, message='导出模板文件', defaultDir='', defaultFile='图号清单模板',
+                           wildcard='Microsoft Excel 97/2000/XP/2003 Workbook(*.xls)|*.xls|Microsoft Excel 2007/2010 Workbook(*.xlsx)|*.xlsx',
+                           style=wx.FD_SAVE)
+        if fd.ShowModal() == wx.ID_OK:
+            try:
+                file_name = fd.GetFilename()
+                dir_name = fd.GetDirectory()
+                self.SaveTemplate(os.path.join(dir_name, file_name))
+                save_msg = wx.MessageDialog(self, '保存成功！', '提示')
+            except FileNotFoundError:
+                save_msg = wx.MessageDialog(self, '保存失败，无效的保存路径', '提示')
+
+            save_msg.ShowModal()
+            save_msg.Destroy()
+
+    # 保存模板文件
+    def SaveTemplate(self, fileName):
+        workbook = xlwt.Workbook()
+
+        sheet = workbook.add_sheet("Sheet1")
+
+        xlwt.easyxf()
+        sheet.write(0, 0, "图号")
+        sheet.write(1, 0, "1-1")
+
+        workbook.save(fileName)
+
     # 使用说明
     def OnUsage(self, event):
-        message = "1.点击[打开]按钮，选择要处理的清单文件\n"\
+        message = "1.点击[打开]按钮，选择要处理的清单文件\n" \
                   + "2.点击[执行]按钮，处理清单文件"
         wx.MessageBox(message, "使用说明", wx.OK | wx.ICON_INFORMATION)
 
