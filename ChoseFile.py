@@ -57,7 +57,7 @@ class ChoseFile(wx.Frame):
             return
 
         file = open(self.FileName.GetValue())
-        self.ConsoleContent.SetValue(file.read())
+        self.ConsoleContent.write(file.read())
         file.close()
 
     def OnProcess(self, event):
@@ -183,27 +183,33 @@ class ChoseFile(wx.Frame):
     def GetVersion(self):
         return "ChoseFile V0.0.1"
 
+    def Log(self, message):
+        self.ConsoleContent.write(message)
+
     # 复制文件
     def Copyfile(self, source, target, fileName):
         if not os.path.isdir(source):
-            print("源文件夹不存在")
-            return
+            self.Log("源文件夹不存在: " + source)
+            return False
 
         if not os.path.isdir(target):
-            print("目标文件夹不存在")
-            return
+            self.Log("目标文件夹不存在: " + target)
+            return False
 
         sourceName = os.path.join(source, fileName)
         targetName = os.path.join(target, fileName)
         if not os.path.exists(sourceName):
-            print("源文件不存在：" + sourceName)
-            return
+            self.Log("源文件不存在: " + sourceName)
+            return False
 
         try:
             shutil.copyfile(sourceName, targetName)
-            print('成功复制：' + targetName)
+            self.Log('成功复制: ' + targetName)
+            return True
         except Exception:
-            print("复制失败")
+            self.Log("复制失败: " + sourceName)
+
+        return False
 
 
 if __name__ == '__main__':
