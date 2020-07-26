@@ -27,8 +27,12 @@ class ChoseFile(wx.Frame):
         self.SelBtn = wx.Button(self, label='执行', pos=(10, 40), size=(80, 25))
         self.SelBtn.Bind(wx.EVT_BUTTON, self.OnReadFile)
 
+        # 清空控制台日志
+        self.ClearBtn = wx.Button(self, label='清空日志', pos=(105, 40), size=(80, 25))
+        self.ClearBtn.Bind(wx.EVT_BUTTON, self.OnClearConsoleContent)
+
         # 控制台
-        self.FileContent = wx.TextCtrl(self, pos=(10, 70), size=(620, 355), style=wx.TE_MULTILINE | wx.TE_READONLY)
+        self.ConsoleContent = wx.TextCtrl(self, pos=(10, 70), size=(620, 355), style=wx.TE_MULTILINE | wx.TE_READONLY)
 
     # 打开文件
     def OnOpen(self, event):
@@ -41,8 +45,11 @@ class ChoseFile(wx.Frame):
 
     def OnReadFile(self, event):
         file = open(self.FileName.GetValue())
-        self.FileContent.SetValue(file.read())
+        self.ConsoleContent.SetValue(file.read())
         file.close()
+
+    def OnClearConsoleContent(self, event):
+        self.ConsoleContent.SetValue("")
 
     # 退出菜单
     def OnExit(self, event):
