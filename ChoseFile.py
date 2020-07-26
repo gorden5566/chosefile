@@ -81,6 +81,7 @@ class ChoseFile(wx.Frame):
         # triggered from the keyboard.
         menuBar = wx.MenuBar()
         menuBar.Append(self.MakeFileMenu(), "&文件")
+        menuBar.Append(self.MakeTemplateMenu(), "&模板")
         menuBar.Append(self.MakeHelpMenu(), "&帮助")
 
         # Give the menu bar to the frame
@@ -105,15 +106,18 @@ class ChoseFile(wx.Frame):
 
         return fileMenu
 
+    # 模板菜单
+    def MakeTemplateMenu(self):
+        templateMenu = wx.Menu()
+
+        exportItem = templateMenu.Append(-1, "&导出\tCtrl-E", "导出模板文件")
+        self.Bind(wx.EVT_MENU, self.OnExportTemplate, exportItem)
+
+        return templateMenu
+
     # 帮助菜单
     def MakeHelpMenu(self):
         helpMenu = wx.Menu()
-
-        templateItem = helpMenu.Append(-1, "&导出模板\tCtrl-T", "导出模板文件")
-        self.Bind(wx.EVT_MENU, self.OnTemplate, templateItem)
-
-        # 分隔符
-        helpMenu.AppendSeparator()
 
         aboutItem = helpMenu.Append(-1, "&关于", "关于")
         self.Bind(wx.EVT_MENU, self.OnAbout, aboutItem)
@@ -124,7 +128,7 @@ class ChoseFile(wx.Frame):
         return helpMenu
 
     # 导出模板文件
-    def OnTemplate(self, event):
+    def OnExportTemplate(self, event):
         fd = wx.FileDialog(self, message='导出模板文件', defaultDir='', defaultFile='图号清单模板',
                            wildcard='Microsoft Excel 97/2000/XP/2003 Workbook(*.xls)|*.xls|Microsoft Excel 2007/2010 Workbook(*.xlsx)|*.xlsx',
                            style=wx.FD_SAVE)
