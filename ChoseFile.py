@@ -86,7 +86,16 @@ class ChoseFile(wx.Frame):
         aboutItem = helpMenu.Append(-1, "&关于", "关于")
         self.Bind(wx.EVT_MENU, self.OnAbout, aboutItem)
 
+        usageItem = helpMenu.Append(-1, "&说明\tCtrl-H", "查看使用说明")
+        self.Bind(wx.EVT_MENU, self.OnUsage, usageItem)
+
         return helpMenu
+
+    # 使用说明
+    def OnUsage(self, event):
+        message = "1.点击[打开]按钮，选择要处理的清单文件\n"\
+                  + "2.点击[执行]按钮，处理清单文件"
+        wx.MessageBox(message, "使用说明", wx.OK | wx.ICON_INFORMATION)
 
     # 关于菜单
     def OnAbout(self, event):
@@ -96,7 +105,7 @@ class ChoseFile(wx.Frame):
     # 状态栏
     def MakeStatusBar(self):
         self.CreateStatusBar()
-        self.SetStatusText("欢迎使用" + self.GetVersion())
+        self.SetStatusText("欢迎使用 " + self.GetVersion())
 
     # 版本号
     def GetVersion(self):
