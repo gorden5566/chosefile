@@ -1,8 +1,9 @@
+import configparser
 import os
 import shutil
-import configparser
 
 import wx
+import xlrd
 import xlwt
 
 
@@ -63,6 +64,12 @@ class ChoseFile(wx.Frame):
         file.close()
 
     def OnProcess(self, event):
+        targetPath = None
+        dlg = wx.DirDialog(self, "请选择要保存的文件夹", style=wx.DD_DEFAULT_STYLE)
+        if dlg.ShowModal() == wx.ID_OK:
+            targetPath = dlg.GetPath()
+        dlg.Destroy()
+
         wx.MessageBox("共处理24个文件", "处理结果", wx.OK | wx.ICON_INFORMATION)
         return
 
@@ -229,6 +236,27 @@ class ChoseFile(wx.Frame):
         properties['columnTitle'] = conf.get(section, "columnTitle")
 
         return properties
+
+    # 读取xls文件
+    def ParseXls(self, filePath, columnTitle):
+        workbook = xlrd.open_workbook(filePath)
+        sheet = workbook.sheet_by_index(0)
+
+        titleArr = sheet.row_values(0)
+
+        ## 计算实际序号
+        columnIndex = titleArr.index(columnTitle)
+        if columnIndex < 0:
+            return None
+
+        nameArr = []
+        for rowIndex in range(1, sheet.nrows):
+            name = sheet.cell_value(rowIndex, columnIndex)
+            stripName = name.replace(' ', '')
+            if stripName == '':
+                continue
+            nameArr.append(stripName)
+        return nameArr
 
 
 if __name__ == '__main__':
