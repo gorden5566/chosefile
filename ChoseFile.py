@@ -49,6 +49,15 @@ class ChoseFile(wx.Frame):
             dialog.Destroy
 
     def OnProcess(self, event):
+        fileName = self.FileName.GetValue()
+        if fileName is None or fileName == '':
+            wx.MessageBox("请选择清单文件", "处理结果", wx.OK | wx.ICON_WARNING)
+            return
+
+        if not os.path.exists(fileName):
+            wx.MessageBox("文件不存在: " + fileName, "处理结果", wx.OK | wx.ICON_WARNING)
+            return
+
         targetPath = None
         dlg = wx.DirDialog(self, "请选择要保存的文件夹", style=wx.DD_DEFAULT_STYLE)
         if dlg.ShowModal() == wx.ID_OK:
@@ -61,17 +70,7 @@ class ChoseFile(wx.Frame):
 
         self.Log("目标文件夹：" + targetPath)
 
-        fileName = self.FileName.GetValue()
-        if fileName is None or fileName == '':
-            wx.MessageBox("请先选择文件", "处理结果", wx.OK | wx.ICON_WARNING)
-            return
-
-        if not os.path.exists(fileName):
-            wx.MessageBox("文件不存在: " + fileName, "处理结果", wx.OK | wx.ICON_WARNING)
-            return
-
         nameArr = self.ParseXls(fileName, "图号")
-        print(nameArr)
 
         # 复制文件
         total = 0
