@@ -70,7 +70,35 @@ class ChoseFile(wx.Frame):
             targetPath = dlg.GetPath()
         dlg.Destroy()
 
-        wx.MessageBox("共处理24个文件", "处理结果", wx.OK | wx.ICON_INFORMATION)
+        if targetPath is None or targetPath == '':
+            wx.MessageBox("请先选择目标文件夹", "处理结果", wx.OK | wx.ICON_WARNING)
+            return
+
+        self.Log("目标文件夹：" + targetPath)
+
+        fileName = self.FileName.GetValue()
+        if fileName is None or fileName == '':
+            wx.MessageBox("请先选择文件", "处理结果", wx.OK | wx.ICON_WARNING)
+            return
+
+        if not os.path.exists(fileName):
+            wx.MessageBox("文件不存在: " + fileName, "处理结果", wx.OK | wx.ICON_WARNING)
+            return
+
+        nameArr = self.ParseXls(fileName, "图号")
+        print(nameArr)
+
+        # 复制文件
+        total = 0
+        successNum = 0
+        for name in nameArr:
+            success = self.Copyfile("/Users/renjianjun/Documents/copy/source", targetPath, name + ".txt")
+            total += 1
+            if success:
+                successNum += 1
+
+        message = "共处理" + str(total) + "个文件，处理成功" + str(successNum) + "个"
+        wx.MessageBox(message, "处理结果", wx.OK | wx.ICON_INFORMATION)
         return
 
     def OnClearConsoleContent(self, event):
@@ -193,7 +221,7 @@ class ChoseFile(wx.Frame):
         return "ChoseFile V0.0.1"
 
     def Log(self, message):
-        self.ConsoleContent.write(message)
+        self.ConsoleContent.write(message + "\n")
 
     # 复制文件
     def Copyfile(self, source, target, fileName):
@@ -213,7 +241,7 @@ class ChoseFile(wx.Frame):
 
         try:
             shutil.copyfile(sourceName, targetName)
-            self.Log('成功复制: ' + targetName)
+            self.Log('复制成功: ' + targetName)
             return True
         except Exception:
             self.Log("复制失败: " + sourceName)
