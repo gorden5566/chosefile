@@ -1,11 +1,15 @@
-import configparser
+# -*- coding: utf-8 -*-
+# /usr/bin/python3
+
 import os
 import shutil
-
 import time
+
 import wx
 import xlrd
 import xlwt
+
+import Setting
 
 
 class ChoseFile(wx.Frame):
@@ -16,6 +20,9 @@ class ChoseFile(wx.Frame):
         # logger
         self.CreateFileLogger()
 
+        # config
+        self.setting = Setting()
+
         # panel
         self.MakePanel()
 
@@ -24,6 +31,11 @@ class ChoseFile(wx.Frame):
 
         # status bar
         self.MakeStatusBar()
+
+        self.initDefault()
+
+    def initDefault(self):
+        self.FileName.SetValue(self.setting.getexcelpath())
 
     def CreateFileLogger(self):
         today = time.strftime("%Y%m%d", time.localtime())
@@ -80,13 +92,13 @@ class ChoseFile(wx.Frame):
 
         self.Log("[目标文件夹]\t" + targetPath)
 
-        nameArr = self.ParseXls(fileName, "图号")
+        nameArr = self.ParseXls(fileName, self.setting.getcolumntitle())
 
         # 复制文件
         total = 0
         successNum = 0
         for name in nameArr:
-            success = self.Copyfile("/Users/renjianjun/Documents/copy/source", targetPath, name + ".txt")
+            success = self.Copyfile(self.setting.getsourcedir(), targetPath, name + self.setting.getextname())
             total += 1
             if success:
                 successNum += 1
@@ -193,7 +205,7 @@ class ChoseFile(wx.Frame):
         sheet = workbook.add_sheet("Sheet1")
 
         xlwt.easyxf()
-        sheet.write(0, 0, "图号")
+        sheet.write(0, 0, self.setting.getcolumntitle())
         sheet.write(1, 0, "1-1")
 
         workbook.save(fileName)
@@ -248,23 +260,6 @@ class ChoseFile(wx.Frame):
             self.Log("[复制失败]\t" + sourceName)
 
         return False
-
-    # 读取配置文件
-    def GetConfig(self, configName):
-        if not os.path.exists(configName):
-            self.Log("[配置文件不存在]\t" + configName)
-            return
-
-        conf = configparser.ConfigParser()
-        conf.read(configName)
-
-        section = "default"
-        properties = []
-        properties['sourceDir'] = conf.get(section, "sourceDir")
-        properties['extName'] = conf.get(section, "extName")
-        properties['columnTitle'] = conf.get(section, "columnTitle")
-
-        return properties
 
     # 读取xls文件
     def ParseXls(self, filePath, columnTitle):
