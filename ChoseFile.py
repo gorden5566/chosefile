@@ -10,7 +10,7 @@ import xlwt
 class ChoseFile(wx.Frame):
     def __init__(self):
         super().__init__(parent=None, title='选图工具', size=(640, 480),
-                         style=wx.RESIZE_BORDER | wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX | wx.CLIP_CHILDREN)
+                         style=wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX | wx.CLIP_CHILDREN)
 
         self.MakePanel()
 
@@ -51,7 +51,7 @@ class ChoseFile(wx.Frame):
     def OnProcess(self, event):
         fileName = self.FileName.GetValue()
         if fileName is None or fileName == '':
-            wx.MessageBox("请选择清单文件", "处理结果", wx.OK | wx.ICON_WARNING)
+            wx.MessageBox("请先选择清单文件", "处理结果", wx.OK | wx.ICON_WARNING)
             return
 
         if not os.path.exists(fileName):
@@ -59,7 +59,7 @@ class ChoseFile(wx.Frame):
             return
 
         targetPath = None
-        dlg = wx.DirDialog(self, "请选择要保存的文件夹", style=wx.DD_DEFAULT_STYLE)
+        dlg = wx.DirDialog(self, "请选择要保存的路径", style=wx.DD_DEFAULT_STYLE)
         if dlg.ShowModal() == wx.ID_OK:
             targetPath = dlg.GetPath()
         dlg.Destroy()
@@ -235,7 +235,7 @@ class ChoseFile(wx.Frame):
     # 读取配置文件
     def GetConfig(self, configName):
         if not os.path.exists(configName):
-            print("配置文件[" + configName + "]不存在")
+            self.Log("配置文件[" + configName + "]不存在")
             return
 
         conf = configparser.ConfigParser()
