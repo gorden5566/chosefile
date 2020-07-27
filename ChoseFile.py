@@ -8,8 +8,8 @@ import wx
 import xlrd
 import xlwt
 
-from setting import Setting
 from logger import Logger
+from setting import Setting
 
 
 class ChoseFile(wx.Frame):
@@ -206,8 +206,10 @@ class ChoseFile(wx.Frame):
 
     # 使用说明
     def OnUsage(self, event):
-        message = "1.点击[打开]按钮，选择要处理的清单文件\n" \
-                  + "2.点击[执行]按钮，处理清单文件"
+        message = "1.打开[config.ini]，配置[sourceDir]等参数\n" \
+                  + "2.点击[选择]按钮，选择要处理的清单文件\n" \
+                  + "3.点击[处理]按钮，选择要保存的路径，确认后执行\n" \
+                  + "4.执行完后，查看日志，确认是否执行成功\n"
         wx.MessageBox(message, "使用说明", wx.OK | wx.ICON_INFORMATION)
 
     # 关于菜单
