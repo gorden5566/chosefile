@@ -112,7 +112,7 @@ class ChoseFile(wx.Frame):
     # 退出菜单
     def OnExit(self, event):
         """Close the frame, terminating the application."""
-        self.fileLogger.close()
+        self.logger.close()
         self.Close(True)
 
     # 生成菜单

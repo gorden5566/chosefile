@@ -14,6 +14,9 @@ class Logger:
         f = open(today + ".log", "a+")
         self.filelogger = f
 
+    def close(self):
+        self.filelogger.close()
+
     def Log(self, message):
         now = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         formatmessage = now + "\t" + message + "\n"
