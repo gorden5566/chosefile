@@ -1,5 +1,6 @@
 import os
 import shutil
+import configparser
 
 import wx
 import xlwt
@@ -211,6 +212,23 @@ class ChoseFile(wx.Frame):
             self.Log("复制失败: " + sourceName)
 
         return False
+
+    # 读取配置文件
+    def GetConfig(self, configName):
+        if not os.path.exists(configName):
+            print("配置文件[" + configName + "]不存在")
+            return
+
+        conf = configparser.ConfigParser()
+        conf.read(configName)
+
+        section = "default"
+        properties = []
+        properties['sourceDir'] = conf.get(section, "sourceDir")
+        properties['extName'] = conf.get(section, "extName")
+        properties['columnTitle'] = conf.get(section, "columnTitle")
+
+        return properties
 
 
 if __name__ == '__main__':
