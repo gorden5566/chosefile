@@ -3,13 +3,13 @@
 
 import os
 import shutil
-import time
 
 import wx
 import xlrd
 import xlwt
 
 from setting import Setting
+from logger import Logger
 
 
 class ChoseFile(wx.Frame):
@@ -17,14 +17,14 @@ class ChoseFile(wx.Frame):
         super().__init__(parent=None, title='选图工具', size=(640, 480),
                          style=wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX | wx.CLIP_CHILDREN)
 
-        # logger
-        self.CreateFileLogger()
-
         # config
         self.setting = Setting()
 
         # panel
         self.MakePanel()
+
+        # logger
+        self.logger = Logger(self.ConsoleContent)
 
         # create a menu bar
         self.MakeMenuBar()
@@ -36,11 +36,6 @@ class ChoseFile(wx.Frame):
 
     def initDefault(self):
         self.FileName.SetValue(self.setting.getexcelpath())
-
-    def CreateFileLogger(self):
-        today = time.strftime("%Y%m%d", time.localtime())
-        f = open(today + ".log", "a+")
-        self.fileLogger = f
 
     def MakePanel(self):
         # 选择文件按钮
@@ -90,7 +85,7 @@ class ChoseFile(wx.Frame):
             wx.MessageBox("请先选择目标文件夹", "处理结果", wx.OK | wx.ICON_WARNING)
             return
 
-        self.Log("[目标文件夹]\t" + targetPath)
+        self.logger.Log("[目标文件夹]\t" + targetPath)
 
         nameArr = self.ParseXls(fileName, self.setting.getcolumntitle())
 
@@ -104,8 +99,8 @@ class ChoseFile(wx.Frame):
                 successNum += 1
 
         message = "共处理" + str(total) + "个文件，处理成功" + str(successNum) + "个"
-        self.Log("[结果汇总]\t" + message)
-        self.Log("--------------------------------------------------------------------")
+        self.logger.Log("[结果汇总]\t" + message)
+        self.logger.Log("--------------------------------------------------------------------")
 
         wx.MessageBox(message, "处理结果", wx.OK | wx.ICON_INFORMATION)
         return
@@ -230,34 +225,28 @@ class ChoseFile(wx.Frame):
     def GetVersion(self):
         return "ChoseFile V0.0.1"
 
-    def Log(self, message):
-        now = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        formatMessage = now + "\t" + message + "\n"
-        self.ConsoleContent.AppendText(formatMessage)
-        self.fileLogger.write(formatMessage)
-
     # 复制文件
     def Copyfile(self, source, target, fileName):
         if not os.path.isdir(source):
-            self.Log("[源文件夹不存在]\t" + source)
+            self.logger.Log("[源文件夹不存在]\t" + source)
             return False
 
         if not os.path.isdir(target):
-            self.Log("[目标文件夹不存在]\t" + target)
+            self.logger.Log("[目标文件夹不存在]\t" + target)
             return False
 
         sourceName = os.path.join(source, fileName)
         targetName = os.path.join(target, fileName)
         if not os.path.exists(sourceName):
-            self.Log("[文件不存在]\t" + sourceName)
+            self.logger.Log("[文件不存在]\t" + sourceName)
             return False
 
         try:
             shutil.copyfile(sourceName, targetName)
-            self.Log("[复制成功]\t" + targetName)
+            self.logger.Log("[复制成功]\t" + targetName)
             return True
         except Exception:
-            self.Log("[复制失败]\t" + sourceName)
+            self.logger.Log("[复制失败]\t" + sourceName)
 
         return False
 
