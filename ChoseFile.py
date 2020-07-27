@@ -9,7 +9,7 @@ import wx
 import xlrd
 import xlwt
 
-import Setting
+from setting import Setting
 
 
 class ChoseFile(wx.Frame):
