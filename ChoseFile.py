@@ -22,46 +22,31 @@ class ChoseFile(wx.Frame):
 
     def MakePanel(self):
         # 选择文件按钮
-        self.OnOpenBtn = wx.Button(self, label='打开', pos=(10, 10), size=(80, 25))
-        self.OnOpenBtn.Bind(wx.EVT_BUTTON, self.OnOpen)
+        self.OnSelectBtn = wx.Button(self, label='选择', pos=(10, 10), size=(80, 25))
+        self.OnSelectBtn.Bind(wx.EVT_BUTTON, self.OnSelect)
 
         # 已选择的文件
         self.FileName = wx.TextCtrl(self, pos=(105, 10), size=(400, 25), style=wx.TE_READONLY)
 
-        # 读取文件
-        self.SelBtn = wx.Button(self, label='解析', pos=(10, 40), size=(80, 25))
-        self.SelBtn.Bind(wx.EVT_BUTTON, self.OnReadFile)
-
         # 处理文件
-        self.ProcessBtn = wx.Button(self, label='处理', pos=(105, 40), size=(80, 25))
+        self.ProcessBtn = wx.Button(self, label='处理', pos=(10, 40), size=(80, 25))
         self.ProcessBtn.Bind(wx.EVT_BUTTON, self.OnProcess)
 
         # 清空控制台日志
-        self.ClearBtn = wx.Button(self, label='清空日志', pos=(200, 40), size=(80, 25))
+        self.ClearBtn = wx.Button(self, label='清空日志', pos=(105, 40), size=(80, 25))
         self.ClearBtn.Bind(wx.EVT_BUTTON, self.OnClearConsoleContent)
 
         # 控制台
         self.ConsoleContent = wx.TextCtrl(self, pos=(10, 70), size=(620, 355), style=wx.TE_MULTILINE | wx.TE_READONLY)
 
     # 打开文件
-    def OnOpen(self, event):
+    def OnSelect(self, event):
         wildcard = 'Microsoft Excel 97/2000/XP/2003 Workbook(*.xls)|*.xls|Microsoft Excel 2007/2010 Workbook(*.xlsx)|*.xlsx'
         dialog = wx.FileDialog(None, "请选择要处理的Excel文件", os.getcwd(), '', wildcard)
 
         if dialog.ShowModal() == wx.ID_OK:
             self.FileName.SetValue(dialog.GetPath())
             dialog.Destroy
-
-    # 解析文件
-    def OnReadFile(self, event):
-        fileName = self.FileName.GetValue()
-        if not os.path.exists(fileName):
-            wx.MessageBox("请先选择文件", "处理结果", wx.OK | wx.ICON_WARNING)
-            return
-
-        file = open(self.FileName.GetValue())
-        self.ConsoleContent.write(file.read())
-        file.close()
 
     def OnProcess(self, event):
         targetPath = None
@@ -138,7 +123,7 @@ class ChoseFile(wx.Frame):
         exitItem = fileMenu.Append(-1, "&退出\tCtrl-Q", "退出")
 
         # Associate a handler function with the EVT_MENU event for each of the menu items.
-        self.Bind(wx.EVT_MENU, self.OnOpen, openItem)
+        self.Bind(wx.EVT_MENU, self.OnSelect, openItem)
         self.Bind(wx.EVT_MENU, self.OnExit, exitItem)
 
         return fileMenu
