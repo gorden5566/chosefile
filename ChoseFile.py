@@ -82,7 +82,6 @@ class ChoseFile(wx.Frame):
         dlg.Destroy()
 
         if targetPath is None or targetPath == '':
-            wx.MessageBox("请先选择目标文件夹", "处理结果", wx.OK | wx.ICON_WARNING)
             return
 
         self.logger.Log("[目标文件夹]\t" + targetPath)
@@ -135,7 +134,7 @@ class ChoseFile(wx.Frame):
 
         # The "\t..." syntax defines an accelerator key that also triggers
         # the same event
-        openItem = fileMenu.Append(-1, "&打开\tCtrl-O", "打开要处理的Excel文件")
+        openItem = fileMenu.Append(-1, "&选择\tCtrl-O", "选择Excel清单文件")
 
         # 分隔符
         fileMenu.AppendSeparator()
