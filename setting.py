@@ -13,6 +13,9 @@ class Setting:
     def getsourcedir(self):
         return self.config.get("sourceDir")
 
+    def gettargetdir(self):
+        return self.config.get("targetDir")
+
     def getextname(self):
         return self.config.get("extName")
 
@@ -33,6 +36,7 @@ class Setting:
 
         section = "default"
         config = {'sourceDir': self.getconfigval(conf, section, "sourceDir", "."),
+                  'targetDir': self.getconfigval(conf, section, "targetDir", "."),
                   'extName': self.getconfigval(conf, section, "extName", ".dwg"),
                   'columnTitle': self.getconfigval(conf, section, "columnTitle", "图号"),
                   'excelPath': self.getconfigval(conf, section, "excelPath", "")

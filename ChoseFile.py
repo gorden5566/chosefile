@@ -76,7 +76,7 @@ class ChoseFile(wx.Frame):
             return
 
         targetPath = None
-        dlg = wx.DirDialog(self, "请选择要保存的路径", style=wx.DD_DEFAULT_STYLE)
+        dlg = wx.DirDialog(self, message="请选择要保存的路径", defaultPath=self.setting.gettargetdir(), style=wx.DD_DEFAULT_STYLE)
         if dlg.ShowModal() == wx.ID_OK:
             targetPath = dlg.GetPath()
         dlg.Destroy()
