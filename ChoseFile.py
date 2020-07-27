@@ -106,7 +106,7 @@ class ChoseFile(wx.Frame):
 
     def OnClearConsoleContent(self, event):
         self.ConsoleContent.SetValue("")
-        wx.MessageBox("已清空", "处理结果", wx.OK | wx.ICON_INFORMATION)
+        # wx.MessageBox("已清空", "处理结果", wx.OK | wx.ICON_INFORMATION)
 
     # 退出菜单
     def OnExit(self, event):
