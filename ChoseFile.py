@@ -2,6 +2,7 @@ import configparser
 import os
 import shutil
 
+import time
 import wx
 import xlrd
 import xlwt
@@ -68,7 +69,7 @@ class ChoseFile(wx.Frame):
             wx.MessageBox("请先选择目标文件夹", "处理结果", wx.OK | wx.ICON_WARNING)
             return
 
-        self.Log("目标文件夹: " + targetPath)
+        self.Log("[目标文件夹]\t" + targetPath)
 
         nameArr = self.ParseXls(fileName, "图号")
 
@@ -82,7 +83,7 @@ class ChoseFile(wx.Frame):
                 successNum += 1
 
         message = "共处理" + str(total) + "个文件，处理成功" + str(successNum) + "个"
-        self.Log("[处理结果]" + message)
+        self.Log("[结果汇总]\t" + message)
         self.Log("--------------------------------------------------------------------")
 
         wx.MessageBox(message, "处理结果", wx.OK | wx.ICON_INFORMATION)
@@ -208,37 +209,38 @@ class ChoseFile(wx.Frame):
         return "ChoseFile V0.0.1"
 
     def Log(self, message):
-        self.ConsoleContent.write(message + "\n")
+        now = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        self.ConsoleContent.write(now + "\t" + message + "\n")
 
     # 复制文件
     def Copyfile(self, source, target, fileName):
         if not os.path.isdir(source):
-            self.Log("源文件夹不存在: " + source)
+            self.Log("[源文件夹不存在]\t" + source)
             return False
 
         if not os.path.isdir(target):
-            self.Log("目标文件夹不存在: " + target)
+            self.Log("[目标文件夹不存在]\t" + target)
             return False
 
         sourceName = os.path.join(source, fileName)
         targetName = os.path.join(target, fileName)
         if not os.path.exists(sourceName):
-            self.Log("源文件不存在: " + sourceName)
+            self.Log("[文件不存在]\t" + sourceName)
             return False
 
         try:
             shutil.copyfile(sourceName, targetName)
-            self.Log('复制成功: ' + targetName)
+            self.Log("[复制成功]\t" + targetName)
             return True
         except Exception:
-            self.Log("复制失败: " + sourceName)
+            self.Log("[复制失败]\t" + sourceName)
 
         return False
 
     # 读取配置文件
     def GetConfig(self, configName):
         if not os.path.exists(configName):
-            self.Log("配置文件[" + configName + "]不存在")
+            self.Log("[配置文件不存在]\t" + configName)
             return
 
         conf = configparser.ConfigParser()
