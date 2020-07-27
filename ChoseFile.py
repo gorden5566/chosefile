@@ -13,6 +13,10 @@ class ChoseFile(wx.Frame):
         super().__init__(parent=None, title='选图工具', size=(640, 480),
                          style=wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX | wx.CLIP_CHILDREN)
 
+        # logger
+        self.CreateFileLogger()
+
+        # panel
         self.MakePanel()
 
         # create a menu bar
@@ -20,6 +24,11 @@ class ChoseFile(wx.Frame):
 
         # status bar
         self.MakeStatusBar()
+
+    def CreateFileLogger(self):
+        today = time.strftime("%Y%m%d", time.localtime())
+        f = open(today + ".log", "a+")
+        self.fileLogger = f
 
     def MakePanel(self):
         # 选择文件按钮
@@ -96,6 +105,7 @@ class ChoseFile(wx.Frame):
     # 退出菜单
     def OnExit(self, event):
         """Close the frame, terminating the application."""
+        self.fileLogger.close()
         self.Close(True)
 
     # 生成菜单
@@ -210,7 +220,9 @@ class ChoseFile(wx.Frame):
 
     def Log(self, message):
         now = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        self.ConsoleContent.write(now + "\t" + message + "\n")
+        formatMessage = now + "\t" + message + "\n"
+        self.ConsoleContent.AppendText(formatMessage)
+        self.fileLogger.write(formatMessage)
 
     # 复制文件
     def Copyfile(self, source, target, fileName):
