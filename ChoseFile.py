@@ -68,7 +68,7 @@ class ChoseFile(wx.Frame):
             wx.MessageBox("请先选择目标文件夹", "处理结果", wx.OK | wx.ICON_WARNING)
             return
 
-        self.Log("目标文件夹：" + targetPath)
+        self.Log("目标文件夹: " + targetPath)
 
         nameArr = self.ParseXls(fileName, "图号")
 
@@ -82,6 +82,9 @@ class ChoseFile(wx.Frame):
                 successNum += 1
 
         message = "共处理" + str(total) + "个文件，处理成功" + str(successNum) + "个"
+        self.Log("[处理结果]" + message)
+        self.Log("--------------------------------------------------------------------")
+
         wx.MessageBox(message, "处理结果", wx.OK | wx.ICON_INFORMATION)
         return
 
