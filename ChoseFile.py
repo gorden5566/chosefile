@@ -265,7 +265,7 @@ class ChoseFile(wx.Frame):
 
         try:
             shutil.copyfile(sourceName, targetName)
-            self.logger.Log("[复制成功]\t" + targetName)
+            self.logger.Log("[复制成功]\t" + sourceName)
             return True
         except Exception:
             self.logger.Log("[复制失败]\t" + sourceName)
