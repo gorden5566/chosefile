@@ -10,6 +10,7 @@ import xlwt
 
 from logger import Logger
 from setting import Setting
+from index import IndexTool
 
 
 class ChoseFile(wx.Frame):
@@ -25,6 +26,9 @@ class ChoseFile(wx.Frame):
 
         # logger
         self.logger = Logger(self.ConsoleContent)
+
+        # 文件索引
+        self.indextool = IndexTool()
 
         # create a menu bar
         self.MakeMenuBar()
@@ -92,7 +96,13 @@ class ChoseFile(wx.Frame):
         total = 0
         successNum = 0
         for name in nameArr:
-            success = self.Copyfile(self.setting.getsourcedir(), targetPath, name + self.setting.getextname())
+            sourceName = name + self.setting.getextname();
+            sourcePath = self.getsourcepath(sourceName)
+            if sourcePath is None:
+                self.logger.Log("[索引未查询到]\t" + sourceName)
+                continue
+
+            success = self.Copyfile(sourcePath, targetPath, sourceName)
             total += 1
             if success:
                 successNum += 1
@@ -103,6 +113,17 @@ class ChoseFile(wx.Frame):
 
         wx.MessageBox(message, "处理结果", wx.OK | wx.ICON_INFORMATION)
         return
+
+    # 查询文件所在目录
+    def getsourcepath(self, sourceName):
+        # 默认位置为 self.setting.getsourcedir()
+        # 因为文件可能在子文件夹中，所以还需考虑递归遍历所有子文件夹
+        # 为加快查询速度，如下为从索引中查询对应结果
+        index = self.indextool.find(sourceName)
+        if index is None:
+            return None
+
+        return index.getpath()
 
     def OnClearConsoleContent(self, event):
         self.ConsoleContent.SetValue("")
