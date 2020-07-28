@@ -70,6 +70,11 @@ class ChoseFile(wx.Frame):
             dialog.Destroy
 
     def OnProcess(self, event):
+        # 检查索引是否存在，若不存在则构建
+        hasbuilddb = self.indextool.checkdb()
+        if not hasbuilddb:
+            self.buildIndex()
+
         fileName = self.FileName.GetValue()
         if fileName is None or fileName == '':
             wx.MessageBox("请先选择清单文件", "处理结果", wx.OK | wx.ICON_WARNING)
@@ -143,7 +148,7 @@ class ChoseFile(wx.Frame):
         # triggered from the keyboard.
         menuBar = wx.MenuBar()
         menuBar.Append(self.MakeFileMenu(), "&文件")
-        menuBar.Append(self.MakeTemplateMenu(), "&模板")
+        menuBar.Append(self.MakeSettingMenu(), "&设置")
         menuBar.Append(self.MakeHelpMenu(), "&帮助")
 
         # Give the menu bar to the frame
@@ -156,33 +161,33 @@ class ChoseFile(wx.Frame):
         # The "\t..." syntax defines an accelerator key that also triggers
         # the same event
         openItem = fileMenu.Append(-1, "&选择\tCtrl-O", "选择Excel清单文件")
+        self.Bind(wx.EVT_MENU, self.OnSelect, openItem)
+
+        exportItem = fileMenu.Append(-1, "&导出模板\tCtrl-E", "导出模板文件")
+        self.Bind(wx.EVT_MENU, self.OnExportTemplate, exportItem)
 
         # 分隔符
         fileMenu.AppendSeparator()
 
         exitItem = fileMenu.Append(-1, "&退出\tCtrl-Q", "退出")
-
-        # Associate a handler function with the EVT_MENU event for each of the menu items.
-        self.Bind(wx.EVT_MENU, self.OnSelect, openItem)
         self.Bind(wx.EVT_MENU, self.OnExit, exitItem)
 
         return fileMenu
 
     # 模板菜单
-    def MakeTemplateMenu(self):
-        templateMenu = wx.Menu()
+    def MakeSettingMenu(self):
+        settingMenu = wx.Menu()
 
-        settingItem = templateMenu.Append(-1, "&设置\tCtrl-,", "模板参数设置")
-        self.Bind(wx.EVT_MENU, self.OnSettingTemplate, settingItem)
+        buildIndexItem = settingMenu.Append(-1, "&重建索引\tCtrl-E", "重建文件索引")
+        self.Bind(wx.EVT_MENU, self.OnBuildIndexTemplate, buildIndexItem)
 
-        exportItem = templateMenu.Append(-1, "&导出\tCtrl-E", "导出模板文件")
-        self.Bind(wx.EVT_MENU, self.OnExportTemplate, exportItem)
+        return settingMenu
 
-        return templateMenu
-
-    # 模板设置
-    def OnSettingTemplate(self, event):
-        pass
+    # 重建索引设置
+    def OnBuildIndexTemplate(self, event):
+        result = self.buildIndex()
+        if result:
+            wx.MessageBox("重建索引成功", "提示", wx.OK | wx.ICON_INFORMATION)
 
     # 帮助菜单
     def MakeHelpMenu(self):
@@ -292,6 +297,14 @@ class ChoseFile(wx.Frame):
                 continue
             nameArr.append(stripName)
         return nameArr
+
+    def buildIndex(self):
+        sourcedir = self.setting.getsourcedir()
+        if not os.path.isdir(sourcedir):
+            wx.MessageBox("源文件夹不存在，请先打开[config.ini]设置[sourceDir]", "提示", wx.OK | wx.ICON_WARNING)
+            return False
+        self.indextool.save(self.indextool.buildindex(sourcedir, "", True))
+        return True
 
 
 if __name__ == '__main__':

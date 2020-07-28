@@ -8,7 +8,14 @@ import pickle
 class IndexTool:
     def __init__(self):
         self.index = None
+        self.dbname = "index.db"
         pass
+
+    # 检查索引文件是否存在
+    def checkdb(self):
+        if os.path.exists(self.dbname):
+            return True
+        return False
 
     # 查找文件
     def find(self, name):
@@ -59,13 +66,13 @@ class IndexTool:
 
     # 保存索引文件
     def save(self, index):
-        f = open('index.db', 'wb')
+        f = open(self.dbname, 'wb')
         pickle.dump(index, f)
         f.close()
 
     # 加载索引文件
     def load(self):
-        f = open('index.db', 'rb')
+        f = open(self.dbname, 'rb')
         index = pickle.load(f)
         f.close()
         return index
