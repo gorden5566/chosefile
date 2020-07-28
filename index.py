@@ -10,21 +10,23 @@ class IndexTool:
         self.index = None
         pass
 
+    # 查找文件
     def find(self, name):
         if self.index is None:
             self.index = self.load()
         return self.dofind(self.index, name)
 
+    # 从索引中查找文件
     def dofind(self, index, name):
         # 文件
-        if not index.isdir:
+        if not index.getisdir():
             if index.equals(name):
                 return index
             else:
                 return None
 
         # 文件夹
-        next = index.next
+        next = index.getnext()
         if next is None:
             return None
 
@@ -35,6 +37,7 @@ class IndexTool:
 
         return None
 
+    # 构建索引
     def buildindex(self, path, name, isdir):
         index = Index(path, name, isdir)
         if not isdir:
@@ -54,11 +57,13 @@ class IndexTool:
 
         return index
 
+    # 保存索引文件
     def save(self, index):
         f = open('index.db', 'wb')
         pickle.dump(index, f)
         f.close()
 
+    # 加载索引文件
     def load(self):
         f = open('index.db', 'rb')
         index = pickle.load(f)
