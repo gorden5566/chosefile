@@ -40,16 +40,17 @@ class IndexTool:
         if not isdir:
             return index
 
-        files = os.listdir(path)
+        pathwithname = os.path.join(path, name)
+        files = os.listdir(pathwithname)
         for file in files:
-            filePath = os.path.join(path, file)
+            filePath = os.path.join(pathwithname, file)
 
             if os.path.isdir(filePath):
                 if file[0] != '.':
-                    index.addnext(self.buildindex(filePath, file, True))
+                    index.addnext(self.buildindex(pathwithname, file, True))
             elif os.path.isfile(filePath):
                 if file[0] != '.':
-                    index.addnext(self.buildindex(path, file, False))
+                    index.addnext(self.buildindex(pathwithname, file, False))
 
         return index
 
@@ -67,9 +68,13 @@ class IndexTool:
 
 class Index:
     def __init__(self, path, name, isdir):
+        # 所在目录
         self.path = path
+        # 文件夹/文件名
         self.name = name
+        # 是否为目录
         self.isdir = isdir
+        # 下一级列表
         self.next = None
 
     def getpath(self):
