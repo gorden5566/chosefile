@@ -35,21 +35,21 @@ class IndexTool:
 
         return None
 
-    def buildindex(self, parentpath, path, name, isdir):
-        index = Index(parentpath, path, name, isdir)
+    def buildindex(self, path, name, isdir):
+        index = Index(path, name, isdir)
         if not isdir:
             return index
 
-        files = os.listdir(parentpath)
+        files = os.listdir(path)
         for file in files:
-            filePath = os.path.join(parentpath, file)
+            filePath = os.path.join(path, file)
 
             if os.path.isdir(filePath):
                 if file[0] != '.':
-                    index.addnext(self.buildindex(path, filePath, file, True))
+                    index.addnext(self.buildindex(filePath, file, True))
             elif os.path.isfile(filePath):
                 if file[0] != '.':
-                    index.addnext(self.buildindex(path, filePath, file, False))
+                    index.addnext(self.buildindex(path, file, False))
 
         return index
 
@@ -66,15 +66,11 @@ class IndexTool:
 
 
 class Index:
-    def __init__(self, parentpath, path, name, isdir):
-        self.parentpath = parentpath
+    def __init__(self, path, name, isdir):
         self.path = path
         self.name = name
         self.isdir = isdir
         self.next = None
-
-    def getparentpath(self):
-        return self.parentpath
 
     def getpath(self):
         return self.path
