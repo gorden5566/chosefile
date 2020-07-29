@@ -19,7 +19,7 @@ class IndexTool:
     def getfullpath(self, index):
         if index is None:
             return None
-        return os.path.join(self.getbasepath(), os.path.normpath(index.getpath()))
+        return os.path.normpath(os.path.join(self.getbasepath(), index.getpath()))
 
     # 检查索引文件是否存在
     def checkdb(self):
