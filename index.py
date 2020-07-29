@@ -7,9 +7,17 @@ import pickle
 
 class IndexTool:
     def __init__(self):
-        self.index = None
+        self.indexfile = None
         self.dbname = "index.db"
         pass
+
+    # 基准路径
+    def getbasepath(self):
+        return self.indexfile.getbasepath()
+
+    # 组装路径
+    def getpath(self, index):
+        return os.path.join(self.getbasepath(), os.path.normpath(index.getpath()))
 
     # 检查索引文件是否存在
     def checkdb(self):
@@ -19,9 +27,10 @@ class IndexTool:
 
     # 查找文件
     def find(self, name):
-        if self.index is None:
-            self.index = self.load()
-        return self.dofind(self.index, name)
+        if self.indexfile is None:
+            self.load()
+        index = self.indexfile.getindex()
+        return self.dofind(index, name)
 
     # 从索引中查找文件
     def dofind(self, index, name):
@@ -45,37 +54,60 @@ class IndexTool:
         return None
 
     # 构建索引
-    def buildindex(self, path, name, isdir):
+    def buildindex(self, path):
+        self.indexfile = IndexFile(path)
+        index = self.dobuildindex(".", "", True)
+        self.indexfile.setindex(index)
+        return self
+
+    def dobuildindex(self, path, name, isdir):
         index = Index(path, name, isdir)
         if not isdir:
             return index
 
-        pathwithname = os.path.join(path, name)
+        pathwithname = os.path.join(self.indexfile.getbasepath(), path, name)
         files = os.listdir(pathwithname)
         for file in files:
-            filePath = os.path.join(pathwithname, file)
+            if file[0] == '.':
+                continue
 
+            filePath = os.path.join(pathwithname, file)
+            pathname = os.path.join(path, name)
             if os.path.isdir(filePath):
-                if file[0] != '.':
-                    index.addnext(self.buildindex(pathwithname, file, True))
+                index.addnext(self.dobuildindex(pathname, file, True))
             elif os.path.isfile(filePath):
-                if file[0] != '.':
-                    index.addnext(self.buildindex(pathwithname, file, False))
+                index.addnext(self.dobuildindex(pathname, file, False))
 
         return index
 
     # 保存索引文件
-    def save(self, index):
+    def save(self):
         f = open(self.dbname, 'wb')
-        pickle.dump(index, f)
+        pickle.dump(self.indexfile, f)
         f.close()
+        return self
 
     # 加载索引文件
     def load(self):
         f = open(self.dbname, 'rb')
-        index = pickle.load(f)
+        self.indexfile = pickle.load(f)
         f.close()
-        return index
+        return self
+
+
+class IndexFile:
+    def __init__(self, basepath):
+        self.basepath = basepath
+        self.index = None
+
+    def getbasepath(self):
+        return self.basepath
+
+    def getindex(self):
+        return self.index
+
+    def setindex(self, index):
+        self.index = index
 
 
 class Index:
