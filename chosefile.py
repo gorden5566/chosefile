@@ -8,9 +8,9 @@ import wx
 import xlrd
 import xlwt
 
+from index import IndexTool
 from logger import Logger
 from setting import Setting
-from index import IndexTool
 
 
 class ChoseFile(wx.Frame):
@@ -18,14 +18,14 @@ class ChoseFile(wx.Frame):
         super().__init__(parent=None, title='选图工具', size=(640, 480),
                          style=wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX | wx.CLIP_CHILDREN)
 
-        # config
-        self.setting = Setting()
-
         # panel
         self.MakePanel()
 
         # logger
         self.logger = Logger(self.ConsoleContent)
+
+        # config
+        self.setting = Setting(self.logger)
 
         # 文件索引
         self.indextool = IndexTool()
@@ -39,7 +39,10 @@ class ChoseFile(wx.Frame):
         self.initDefault()
 
     def initDefault(self):
-        self.FileName.SetValue(self.setting.getexcelpath())
+        excelpath = self.setting.getexcelpath()
+        if excelpath is None:
+            return
+        self.FileName.SetValue(excelpath)
 
     def MakePanel(self):
         # 选择文件按钮
@@ -85,7 +88,8 @@ class ChoseFile(wx.Frame):
             return
 
         targetPath = None
-        dlg = wx.DirDialog(self, message="请选择要保存的路径", defaultPath=self.setting.gettargetdir(), style=wx.DD_DEFAULT_STYLE)
+        dlg = wx.DirDialog(self, message="请选择要保存的路径", defaultPath=self.setting.gettargetdir(),
+                           style=wx.DD_DEFAULT_STYLE)
         if dlg.ShowModal() == wx.ID_OK:
             targetPath = dlg.GetPath()
         dlg.Destroy()
@@ -103,12 +107,13 @@ class ChoseFile(wx.Frame):
         for name in nameArr:
             sourceName = name + self.setting.getextname();
             sourcePath = self.getsourcepath(sourceName)
+            total += 1
+
             if sourcePath is None:
                 self.logger.Log("[索引未查询到]\t" + sourceName)
                 continue
 
             success = self.Copyfile(sourcePath, targetPath, sourceName)
-            total += 1
             if success:
                 successNum += 1
 
@@ -125,10 +130,7 @@ class ChoseFile(wx.Frame):
         # 因为文件可能在子文件夹中，所以还需考虑递归遍历所有子文件夹
         # 为加快查询速度，如下为从索引中查询对应结果
         index = self.indextool.find(sourceName)
-        if index is None:
-            return None
-
-        return index.getpath()
+        return self.indextool.getfullpath(index)
 
     def OnClearConsoleContent(self, event):
         self.ConsoleContent.SetValue("")
@@ -300,10 +302,13 @@ class ChoseFile(wx.Frame):
 
     def buildIndex(self):
         sourcedir = self.setting.getsourcedir()
+        if sourcedir is None:
+            wx.MessageBox("源文件夹未设置，请先打开[config.ini]设置[sourceDir]", "提示", wx.OK | wx.ICON_WARNING)
+            return False
         if not os.path.isdir(sourcedir):
             wx.MessageBox("源文件夹不存在，请先打开[config.ini]设置[sourceDir]", "提示", wx.OK | wx.ICON_WARNING)
             return False
-        self.indextool.save(self.indextool.buildindex(sourcedir, "", True))
+        self.indextool.buildindex(sourcedir).save()
         return True
 
 
