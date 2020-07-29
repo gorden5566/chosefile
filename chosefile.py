@@ -15,7 +15,7 @@ from setting import Setting
 
 class ChoseFile(wx.Frame):
     def __init__(self):
-        super().__init__(parent=None, title='选图工具', size=(640, 480),
+        super().__init__(parent=None, title='ChoseFile', size=(640, 480),
                          style=wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX | wx.CLIP_CHILDREN)
 
         # panel
@@ -46,14 +46,14 @@ class ChoseFile(wx.Frame):
 
     def MakePanel(self):
         # 选择文件按钮
-        self.OnSelectBtn = wx.Button(self, label='选择', pos=(10, 10), size=(80, 25))
+        self.OnSelectBtn = wx.Button(self, label='选择清单', pos=(10, 10), size=(80, 25))
         self.OnSelectBtn.Bind(wx.EVT_BUTTON, self.OnSelect)
 
         # 已选择的文件
         self.FileName = wx.TextCtrl(self, pos=(105, 10), size=(400, 25), style=wx.TE_READONLY)
 
         # 处理文件
-        self.ProcessBtn = wx.Button(self, label='处理', pos=(10, 40), size=(80, 25))
+        self.ProcessBtn = wx.Button(self, label='批量复制', pos=(10, 40), size=(80, 25))
         self.ProcessBtn.Bind(wx.EVT_BUTTON, self.OnProcess)
 
         # 清空控制台日志
@@ -110,7 +110,7 @@ class ChoseFile(wx.Frame):
             total += 1
 
             if sourcePath is None:
-                self.logger.Log("[索引未查询到]\t" + sourceName)
+                self.logger.Log("[索引结果空]\t" + sourceName)
                 continue
 
             success = self.Copyfile(sourcePath, targetPath, sourceName)
@@ -162,7 +162,7 @@ class ChoseFile(wx.Frame):
 
         # The "\t..." syntax defines an accelerator key that also triggers
         # the same event
-        openItem = fileMenu.Append(-1, "&选择\tCtrl-O", "选择Excel清单文件")
+        openItem = fileMenu.Append(-1, "&选择清单\tCtrl-O", "选择Excel清单文件")
         self.Bind(wx.EVT_MENU, self.OnSelect, openItem)
 
         exportItem = fileMenu.Append(-1, "&导出模板\tCtrl-E", "导出模板文件")
@@ -180,7 +180,7 @@ class ChoseFile(wx.Frame):
     def MakeSettingMenu(self):
         settingMenu = wx.Menu()
 
-        buildIndexItem = settingMenu.Append(-1, "&重建索引\tCtrl-B", "重建文件索引")
+        buildIndexItem = settingMenu.Append(-1, "&重建索引\tCtrl-B", "修改源文件路径[sourceDir]后，需要重新构建文件索引")
         self.Bind(wx.EVT_MENU, self.OnBuildIndexTemplate, buildIndexItem)
 
         return settingMenu
@@ -237,13 +237,14 @@ class ChoseFile(wx.Frame):
         message = "1.打开[config.ini]，配置[sourceDir]等参数\n" \
                   + "2.点击[选择]按钮，选择要处理的清单文件\n" \
                   + "3.点击[处理]按钮，选择要保存的路径，确认后执行\n" \
-                  + "4.执行完后，查看日志，确认是否执行成功\n"
+                  + "4.执行完后，查看日志，确认是否执行成功\n" \
+                  + "注意：若修改了[sourceDir]参数，请点击[设置]->[重建索引]菜单重新构建文件索引\n"
         wx.MessageBox(message, "使用说明", wx.OK | wx.ICON_INFORMATION)
 
     # 关于菜单
     def OnAbout(self, event):
         """Display an About Dialog"""
-        wx.MessageBox("这是一个简单的选图工具", self.GetVersion(), wx.OK | wx.ICON_INFORMATION)
+        wx.MessageBox("批量复制文件", self.GetVersion(), wx.OK | wx.ICON_INFORMATION)
 
     # 状态栏
     def MakeStatusBar(self):
