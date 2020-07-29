@@ -7,32 +7,50 @@ import os
 
 class Setting:
 
-    def __init__(self):
+    def __init__(self, logger):
+        self.logger = logger
         self.config = self.getconfig("config.ini")
 
     def getsourcedir(self):
+        if self.hasnotconfig():
+            return None
         return self.config.get("sourceDir")
 
     def gettargetdir(self):
+        if self.hasnotconfig():
+            return None
         return self.config.get("targetDir")
 
     def getextname(self):
+        if self.hasnotconfig():
+            return None
         return self.config.get("extName")
 
     def getcolumntitle(self):
+        if self.hasnotconfig():
+            return None
         return self.config.get("columnTitle")
 
     def getexcelpath(self):
+        if self.hasnotconfig():
+            return None
         return self.config.get("excelPath")
+
+    def hasnotconfig(self):
+        if self.config is None:
+            return True
+        return False
 
     # 读取配置文件
     def getconfig(self, configname):
-        if not os.path.exists(configname):
-            self.Log("[配置文件不存在]\t" + configname)
-            return
+        currentpath = os.getcwd()
+        configpath = os.path.join(currentpath, configname)
+        if not os.path.exists(configpath):
+            self.logger.Log("[配置文件不存在]\t" + configpath)
+            return None
 
         conf = configparser.ConfigParser()
-        conf.read(configname)
+        conf.read(configpath)
 
         section = "default"
         config = {'sourceDir': self.getconfigval(conf, section, "sourceDir", "."),
