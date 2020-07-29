@@ -16,7 +16,7 @@ class IndexTool:
         return self.indexfile.getbasepath()
 
     # 组装路径
-    def getpath(self, index):
+    def getfullpath(self, index):
         return os.path.join(self.getbasepath(), os.path.normpath(index.getpath()))
 
     # 检查索引文件是否存在
