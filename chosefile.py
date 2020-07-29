@@ -28,7 +28,7 @@ class ChoseFile(wx.Frame):
         self.setting = Setting(self.logger)
 
         # 文件索引
-        self.indextool = IndexTool()
+        self.indextool = IndexTool(self.setting.getmaxdepth())
 
         # create a menu bar
         self.MakeMenuBar()

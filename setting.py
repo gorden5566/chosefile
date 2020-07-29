@@ -13,28 +13,37 @@ class Setting:
 
     def getsourcedir(self):
         if self.hasnotconfig():
-            return None
+            return os.getcwd()
         return self.config.get("sourceDir")
 
     def gettargetdir(self):
         if self.hasnotconfig():
-            return None
+            return os.getcwd()
         return self.config.get("targetDir")
 
     def getextname(self):
         if self.hasnotconfig():
-            return None
+            return ".dwg"
         return self.config.get("extName")
 
     def getcolumntitle(self):
         if self.hasnotconfig():
-            return None
+            return "图号"
         return self.config.get("columnTitle")
 
     def getexcelpath(self):
         if self.hasnotconfig():
-            return None
+            return ""
         return self.config.get("excelPath")
+
+    def getmaxdepth(self):
+        if self.hasnotconfig():
+            return 5
+        depth = self.config.get("maxDepth")
+        try:
+            return int(depth)
+        except ValueError:
+            return 5
 
     def hasnotconfig(self):
         if self.config is None:
@@ -57,7 +66,8 @@ class Setting:
                   'targetDir': self.getconfigval(conf, section, "targetDir", "."),
                   'extName': self.getconfigval(conf, section, "extName", ".dwg"),
                   'columnTitle': self.getconfigval(conf, section, "columnTitle", "图号"),
-                  'excelPath': self.getconfigval(conf, section, "excelPath", "")
+                  'excelPath': self.getconfigval(conf, section, "excelPath", ""),
+                  'maxDepth': self.getconfigval(conf, section, "maxDepth", 5)
                   }
 
         return config

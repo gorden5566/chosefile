@@ -6,7 +6,8 @@ import pickle
 
 
 class IndexTool:
-    def __init__(self):
+    def __init__(self, maxdepth):
+        self.maxdepth = maxdepth
         self.indexfile = None
         self.dbname = "index.db"
         pass
@@ -58,11 +59,14 @@ class IndexTool:
     # 构建索引
     def buildindex(self, path):
         self.indexfile = IndexFile(path)
-        index = self.dobuildindex(None, ".", "", True)
+        index = self.dobuildindex(None, ".", "", True, 0)
         self.indexfile.setindex(index)
         return self
 
-    def dobuildindex(self, parent, path, name, isdir):
+    def dobuildindex(self, parent, path, name, isdir, depth):
+        # 最大深度
+        if depth > self.maxdepth:
+            return None
         index = Index(parent, path, name, isdir)
         if not isdir:
             return index
@@ -78,11 +82,10 @@ class IndexTool:
                 continue
 
             filePath = os.path.join(pathwithname, file)
-            pathname = os.path.join(path, name)
             if os.path.isdir(filePath):
-                index.addnext(self.dobuildindex(index, name, file, True))
+                index.addnext(self.dobuildindex(index, name, file, True, depth + 1))
             elif os.path.isfile(filePath):
-                index.addnext(self.dobuildindex(index, name, file, False))
+                index.addnext(self.dobuildindex(index, name, file, False, depth + 1))
 
         return index
 
