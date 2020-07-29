@@ -56,16 +56,20 @@ class IndexTool:
     # 构建索引
     def buildindex(self, path):
         self.indexfile = IndexFile(path)
-        index = self.dobuildindex(".", "", True)
+        index = self.dobuildindex(None, ".", "", True)
         self.indexfile.setindex(index)
         return self
 
-    def dobuildindex(self, path, name, isdir):
-        index = Index(path, name, isdir)
+    def dobuildindex(self, parent, path, name, isdir):
+        index = Index(parent, path, name, isdir)
         if not isdir:
             return index
 
-        pathwithname = os.path.join(self.indexfile.getbasepath(), path, name)
+        parentpath = ""
+        if not parent is None:
+            parentpath = parent.getpath()
+        pathwithname = os.path.join(self.indexfile.getbasepath(), parentpath, path, name)
+
         files = os.listdir(pathwithname)
         for file in files:
             if file[0] == '.':
@@ -74,9 +78,9 @@ class IndexTool:
             filePath = os.path.join(pathwithname, file)
             pathname = os.path.join(path, name)
             if os.path.isdir(filePath):
-                index.addnext(self.dobuildindex(pathname, file, True))
+                index.addnext(self.dobuildindex(index, name, file, True))
             elif os.path.isfile(filePath):
-                index.addnext(self.dobuildindex(pathname, file, False))
+                index.addnext(self.dobuildindex(index, name, file, False))
 
         return index
 
@@ -111,7 +115,8 @@ class IndexFile:
 
 
 class Index:
-    def __init__(self, path, name, isdir):
+    def __init__(self, parent, path, name, isdir):
+        self.parent = parent
         # 所在目录
         self.path = path
         # 文件夹/文件名
@@ -122,7 +127,9 @@ class Index:
         self.next = None
 
     def getpath(self):
-        return self.path
+        if self.parent is None:
+            return self.path
+        return os.path.join(self.parent.getpath(), self.path)
 
     def getname(self):
         return self.name
