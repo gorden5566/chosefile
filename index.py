@@ -17,6 +17,8 @@ class IndexTool:
 
     # 组装路径
     def getfullpath(self, index):
+        if index is None:
+            return None
         return os.path.join(self.getbasepath(), os.path.normpath(index.getpath()))
 
     # 检查索引文件是否存在
