@@ -180,7 +180,7 @@ class ChoseFile(wx.Frame):
     def MakeSettingMenu(self):
         settingMenu = wx.Menu()
 
-        buildIndexItem = settingMenu.Append(-1, "&重建索引\tCtrl-E", "重建文件索引")
+        buildIndexItem = settingMenu.Append(-1, "&重建索引\tCtrl-B", "重建文件索引")
         self.Bind(wx.EVT_MENU, self.OnBuildIndexTemplate, buildIndexItem)
 
         return settingMenu
