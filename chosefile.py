@@ -84,7 +84,7 @@ class ChoseFile(wx.Frame):
         # 检查索引是否存在，若不存在则构建
         has_build_db = self.index_tool.check_db()
         if not has_build_db:
-            result = self.build_Index()
+            result = self.build_index()
             if not result:
                 return
 
@@ -201,7 +201,7 @@ class ChoseFile(wx.Frame):
 
     # 重建索引设置
     def on_build_index(self, event):
-        result = self.build_Index()
+        result = self.build_index()
         if result:
             sourcedir = self.setting.get_source_dir()
             message = "重建索引成功[" + sourcedir + "]"
@@ -261,7 +261,7 @@ class ChoseFile(wx.Frame):
     def get_version(self):
         return "ChoseFile V0.0.1"
 
-    def build_Index(self):
+    def build_index(self):
         source_dir = self.setting.get_source_dir()
         if source_dir is None:
             wx.MessageBox("源文件夹未设置，请先打开[config.ini]设置[sourceDir]", "提示", wx.OK | wx.ICON_WARNING)
