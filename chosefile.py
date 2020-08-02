@@ -11,6 +11,7 @@ from index import IndexTool
 from logger import Logger
 from setting import Setting
 from parser import Parser
+from processor import Processor
 
 
 class ChoseFile(wx.Frame):
@@ -29,6 +30,9 @@ class ChoseFile(wx.Frame):
 
         # parser
         self.parser = Parser(self.logger)
+
+        # processor
+        self.processor = Processor(self.logger)
 
         # 文件索引
         self.indextool = IndexTool(self.setting.getmaxdepth())
@@ -79,7 +83,9 @@ class ChoseFile(wx.Frame):
         # 检查索引是否存在，若不存在则构建
         hasbuilddb = self.indextool.checkdb()
         if not hasbuilddb:
-            self.buildIndex()
+            result = self.buildIndex()
+            if not result:
+                return
 
         fileName = self.FileName.GetValue()
         if fileName is None or fileName == '':
@@ -119,7 +125,7 @@ class ChoseFile(wx.Frame):
                 self.logger.Log("[索引结果空]\t" + sourceName)
                 continue
 
-            success = self.Copyfile(sourcePath, targetPath, sourceName)
+            success = self.processor.copy_file(sourcePath, targetPath, sourceName)
             if success:
                 successNum += 1
 
@@ -265,31 +271,6 @@ class ChoseFile(wx.Frame):
     # 版本号
     def GetVersion(self):
         return "ChoseFile V0.0.1"
-
-    # 复制文件
-    def Copyfile(self, source, target, fileName):
-        if not os.path.isdir(source):
-            self.logger.Log("[源文件夹不存在]\t" + source)
-            return False
-
-        if not os.path.isdir(target):
-            self.logger.Log("[目标文件夹不存在]\t" + target)
-            return False
-
-        sourceName = os.path.join(source, fileName)
-        targetName = os.path.join(target, fileName)
-        if not os.path.exists(sourceName):
-            self.logger.Log("[文件不存在]\t" + sourceName)
-            return False
-
-        try:
-            shutil.copyfile(sourceName, targetName)
-            self.logger.Log("[复制成功]\t" + sourceName)
-            return True
-        except Exception:
-            self.logger.Log("[复制失败]\t" + sourceName)
-
-        return False
 
     def buildIndex(self):
         sourcedir = self.setting.getsourcedir()
