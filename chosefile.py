@@ -32,7 +32,7 @@ class ChoseFile(wx.Frame):
         self.processor = Processor(self.logger, self.setting)
 
         # 文件索引
-        self.indextool = IndexTool(self.setting.get_max_depth())
+        self.index_tool = IndexTool(self.setting.get_max_depth())
 
         # create a menu bar
         self.MakeMenuBar()
@@ -78,9 +78,9 @@ class ChoseFile(wx.Frame):
 
     def OnProcess(self, event):
         # 检查索引是否存在，若不存在则构建
-        hasbuilddb = self.indextool.check_db()
-        if not hasbuilddb:
-            result = self.buildIndex()
+        has_build_db = self.index_tool.check_db()
+        if not has_build_db:
+            result = self.build_Index()
             if not result:
                 return
 
@@ -138,8 +138,8 @@ class ChoseFile(wx.Frame):
         # 默认位置为 self.setting.getsourcedir()
         # 因为文件可能在子文件夹中，所以还需考虑递归遍历所有子文件夹
         # 为加快查询速度，如下为从索引中查询对应结果
-        index = self.indextool.find(sourceName)
-        return self.indextool.get_full_path(index)
+        index = self.index_tool.find(sourceName)
+        return self.index_tool.get_full_path(index)
 
     def OnClearConsoleContent(self, event):
         self.ConsoleContent.SetValue("")
@@ -197,7 +197,7 @@ class ChoseFile(wx.Frame):
 
     # 重建索引设置
     def OnBuildIndexTemplate(self, event):
-        result = self.buildIndex()
+        result = self.build_Index()
         if result:
             sourcedir = self.setting.get_source_dir()
             message = "重建索引成功[" + sourcedir + "]"
@@ -257,15 +257,15 @@ class ChoseFile(wx.Frame):
     def GetVersion(self):
         return "ChoseFile V0.0.1"
 
-    def buildIndex(self):
-        sourcedir = self.setting.get_source_dir()
-        if sourcedir is None:
+    def build_Index(self):
+        source_dir = self.setting.get_source_dir()
+        if source_dir is None:
             wx.MessageBox("源文件夹未设置，请先打开[config.ini]设置[sourceDir]", "提示", wx.OK | wx.ICON_WARNING)
             return False
-        if not os.path.isdir(sourcedir):
+        if not os.path.isdir(source_dir):
             wx.MessageBox("源文件夹不存在，请先打开[config.ini]设置[sourceDir]", "提示", wx.OK | wx.ICON_WARNING)
             return False
-        self.indextool.build_index(sourcedir).save()
+        self.index_tool.build_index(source_dir).save()
         return True
 
 
