@@ -15,7 +15,7 @@ from setting import Setting
 
 class ChoseFile(wx.Frame):
     def __init__(self):
-        super().__init__(parent=None, title='ChoseFile', size=(640, 480),
+        super().__init__(parent=None, title='ChoseFile', size=(640, 505),
                          style=wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX | wx.CLIP_CHILDREN)
 
         # panel
@@ -61,7 +61,7 @@ class ChoseFile(wx.Frame):
         self.ClearBtn.Bind(wx.EVT_BUTTON, self.OnClearConsoleContent)
 
         # 控制台
-        self.ConsoleContent = wx.TextCtrl(self, pos=(10, 70), size=(620, 355), style=wx.TE_MULTILINE | wx.TE_READONLY)
+        self.ConsoleContent = wx.TextCtrl(self, pos=(10, 70), size=(605, 345), style=wx.TE_MULTILINE | wx.TE_READONLY)
 
     # 打开文件
     def OnSelect(self, event):
@@ -149,6 +149,7 @@ class ChoseFile(wx.Frame):
         # platforms that support it those letters are underlined and can be
         # triggered from the keyboard.
         menuBar = wx.MenuBar()
+
         menuBar.Append(self.MakeFileMenu(), "&文件")
         menuBar.Append(self.MakeSettingMenu(), "&设置")
         menuBar.Append(self.MakeHelpMenu(), "&帮助")
