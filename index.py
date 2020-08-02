@@ -37,6 +37,9 @@ class IndexTool:
 
     # 从索引中查找文件
     def dofind(self, index, name):
+        if index is None:
+            return None
+
         # 文件
         if not index.getisdir():
             if index.equals(name):
