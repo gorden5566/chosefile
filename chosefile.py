@@ -29,7 +29,7 @@ class ChoseFile(wx.Frame):
         self.parser = Parser(self.logger)
 
         # processor
-        self.processor = Processor(self.logger, self.setting)
+        self.processor = Processor(self.logger)
 
         # index
         self.index_tool = IndexTool(self.setting.get_max_depth())
@@ -230,7 +230,8 @@ class ChoseFile(wx.Frame):
             try:
                 file_name = fd.GetFilename()
                 dir_name = fd.GetDirectory()
-                self.processor.export_template(os.path.join(dir_name, file_name))
+                column_title = self.setting.get_column_title()
+                self.processor.export_template(os.path.join(dir_name, file_name), column_title)
                 save_msg = wx.MessageDialog(self, '保存成功！', '提示')
             except FileNotFoundError:
                 save_msg = wx.MessageDialog(self, '保存失败，无效的保存路径', '提示')

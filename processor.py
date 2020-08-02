@@ -7,9 +7,8 @@ import xlwt
 
 
 class Processor:
-    def __init__(self, logger, setting):
+    def __init__(self, logger):
         self.logger = logger
-        self.setting = setting
 
     # 复制文件
     def copy_file(self, source, target, file_name):
@@ -37,12 +36,12 @@ class Processor:
         return False
 
     # 导出模板文件
-    def export_template(self, file_name):
+    def export_template(self, file_name, column_title):
         workbook = xlwt.Workbook()
 
         sheet = workbook.add_sheet("Sheet1")
 
-        sheet.write(0, 0, self.setting.get_column_title())
+        sheet.write(0, 0, column_title)
         sheet.write(1, 0, "1-1")
 
         workbook.save(file_name)
