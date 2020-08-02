@@ -5,12 +5,12 @@ import os
 import shutil
 
 import wx
-import xlrd
 import xlwt
 
 from index import IndexTool
 from logger import Logger
 from setting import Setting
+from parser import Parser
 
 
 class ChoseFile(wx.Frame):
@@ -26,6 +26,9 @@ class ChoseFile(wx.Frame):
 
         # config
         self.setting = Setting(self.logger)
+
+        # parser
+        self.parser = Parser(self.logger)
 
         # 文件索引
         self.indextool = IndexTool(self.setting.getmaxdepth())
@@ -99,7 +102,7 @@ class ChoseFile(wx.Frame):
 
         self.logger.Log("[目标文件夹]\t" + targetPath)
 
-        nameArr = self.ParseXls(fileName, self.setting.getcolumntitle())
+        nameArr = self.parser.parse_excel(fileName, self.setting.getcolumntitle())
         if nameArr is None:
             wx.MessageBox("解析结果为空", "处理结果", wx.OK | wx.ICON_WARNING)
             return
@@ -287,42 +290,6 @@ class ChoseFile(wx.Frame):
             self.logger.Log("[复制失败]\t" + sourceName)
 
         return False
-
-    # 读取xls文件
-    def ParseXls(self, filePath, columnTitle):
-        workbook = xlrd.open_workbook(filePath)
-        sheet = workbook.sheet_by_index(0)
-
-        # 查找title位置
-        titlePos = self.findTitle(sheet, columnTitle)
-
-        if titlePos is None:
-            self.logger.Log("[解析excel失败]\t" + columnTitle)
-            return None
-
-        titleCol = titlePos["col"]
-        titleRow = titlePos["row"]
-
-        nameArr = []
-        for rowIndex in range(titleRow + 1, sheet.nrows):
-            name = sheet.cell_value(rowIndex, titleCol)
-            stripName = name.replace(' ', '')
-            if stripName == '':
-                continue
-            nameArr.append(stripName)
-        return nameArr
-
-    def findTitle(self, sheet, columnTitle):
-        for i in range(20):
-            titleArr = sheet.row_values(i)
-            if columnTitle not in titleArr:
-                continue
-
-            columnIndex = titleArr.index(columnTitle)
-            if columnIndex >= 0:
-                return {"row": i, "col": columnIndex}
-
-        return None
 
     def buildIndex(self):
         sourcedir = self.setting.getsourcedir()
