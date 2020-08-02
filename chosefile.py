@@ -315,6 +315,9 @@ class ChoseFile(wx.Frame):
     def findTitle(self, sheet, columnTitle):
         for i in range(20):
             titleArr = sheet.row_values(i)
+            if columnTitle not in titleArr:
+                continue
+
             columnIndex = titleArr.index(columnTitle)
             if columnIndex >= 0:
                 return {"row": i, "col": columnIndex}
