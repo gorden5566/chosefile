@@ -32,7 +32,7 @@ class ChoseFile(wx.Frame):
         self.processor = Processor(self.logger, self.setting)
 
         # 文件索引
-        self.indextool = IndexTool(self.setting.getmaxdepth())
+        self.indextool = IndexTool(self.setting.get_max_depth())
 
         # create a menu bar
         self.MakeMenuBar()
@@ -43,7 +43,7 @@ class ChoseFile(wx.Frame):
         self.initDefault()
 
     def initDefault(self):
-        excelpath = self.setting.getexcelpath()
+        excelpath = self.setting.get_excel_path()
         if excelpath is None:
             return
         self.FileName.SetValue(excelpath)
@@ -94,7 +94,7 @@ class ChoseFile(wx.Frame):
             return
 
         targetPath = None
-        dlg = wx.DirDialog(self, message="请选择要保存的路径", defaultPath=self.setting.gettargetdir(),
+        dlg = wx.DirDialog(self, message="请选择要保存的路径", defaultPath=self.setting.get_target_dir(),
                            style=wx.DD_DEFAULT_STYLE)
         if dlg.ShowModal() == wx.ID_OK:
             targetPath = dlg.GetPath()
@@ -105,7 +105,7 @@ class ChoseFile(wx.Frame):
 
         self.logger.Log("[目标文件夹]\t" + targetPath)
 
-        nameArr = self.parser.parse_excel(fileName, self.setting.getcolumntitle())
+        nameArr = self.parser.parse_excel(fileName, self.setting.get_column_title())
         if nameArr is None:
             wx.MessageBox("解析结果为空", "处理结果", wx.OK | wx.ICON_WARNING)
             return
@@ -114,7 +114,7 @@ class ChoseFile(wx.Frame):
         total = 0
         successNum = 0
         for name in nameArr:
-            sourceName = name + self.setting.getextname();
+            sourceName = name + self.setting.get_ext_name();
             sourcePath = self.getsourcepath(sourceName)
             total += 1
 
@@ -199,7 +199,7 @@ class ChoseFile(wx.Frame):
     def OnBuildIndexTemplate(self, event):
         result = self.buildIndex()
         if result:
-            sourcedir = self.setting.getsourcedir()
+            sourcedir = self.setting.get_source_dir()
             message = "重建索引成功[" + sourcedir + "]"
             wx.MessageBox(message, "提示", wx.OK | wx.ICON_INFORMATION)
         else:
@@ -258,7 +258,7 @@ class ChoseFile(wx.Frame):
         return "ChoseFile V0.0.1"
 
     def buildIndex(self):
-        sourcedir = self.setting.getsourcedir()
+        sourcedir = self.setting.get_source_dir()
         if sourcedir is None:
             wx.MessageBox("源文件夹未设置，请先打开[config.ini]设置[sourceDir]", "提示", wx.OK | wx.ICON_WARNING)
             return False

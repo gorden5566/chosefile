@@ -9,35 +9,35 @@ class Setting:
 
     def __init__(self, logger):
         self.logger = logger
-        self.config = self.getconfig("config.ini")
+        self.config = self.get_config("config.ini")
 
-    def getsourcedir(self):
-        if self.hasnotconfig():
+    def get_source_dir(self):
+        if self.has_not_config():
             return os.getcwd()
         return self.config.get("sourceDir")
 
-    def gettargetdir(self):
-        if self.hasnotconfig():
+    def get_target_dir(self):
+        if self.has_not_config():
             return os.getcwd()
         return self.config.get("targetDir")
 
-    def getextname(self):
-        if self.hasnotconfig():
+    def get_ext_name(self):
+        if self.has_not_config():
             return ".dwg"
         return self.config.get("extName")
 
-    def getcolumntitle(self):
-        if self.hasnotconfig():
+    def get_column_title(self):
+        if self.has_not_config():
             return "图号"
         return self.config.get("columnTitle")
 
-    def getexcelpath(self):
-        if self.hasnotconfig():
+    def get_excel_path(self):
+        if self.has_not_config():
             return ""
         return self.config.get("excelPath")
 
-    def getmaxdepth(self):
-        if self.hasnotconfig():
+    def get_max_depth(self):
+        if self.has_not_config():
             return 5
         depth = self.config.get("maxDepth")
         try:
@@ -45,34 +45,34 @@ class Setting:
         except ValueError:
             return 5
 
-    def hasnotconfig(self):
+    def has_not_config(self):
         if self.config is None:
             return True
         return False
 
     # 读取配置文件
-    def getconfig(self, configname):
-        currentpath = os.getcwd()
-        configpath = os.path.join(currentpath, configname)
-        if not os.path.exists(configpath):
-            self.logger.Log("[配置文件不存在]\t" + configpath)
+    def get_config(self, config_name):
+        current_path = os.getcwd()
+        config_path = os.path.join(current_path, config_name)
+        if not os.path.exists(config_path):
+            self.logger.Log("[配置文件不存在]\t" + config_path)
             return None
 
         conf = configparser.ConfigParser()
-        conf.read(configpath, encoding="utf-8")
+        conf.read(config_path, encoding="utf-8")
 
         section = "default"
-        config = {'sourceDir': self.getconfigval(conf, section, "sourceDir", "."),
-                  'targetDir': self.getconfigval(conf, section, "targetDir", "."),
-                  'extName': self.getconfigval(conf, section, "extName", ".dwg"),
-                  'columnTitle': self.getconfigval(conf, section, "columnTitle", "图号"),
-                  'excelPath': self.getconfigval(conf, section, "excelPath", ""),
-                  'maxDepth': self.getconfigval(conf, section, "maxDepth", 5)
+        config = {'sourceDir': self.get_config_val(conf, section, "sourceDir", "."),
+                  'targetDir': self.get_config_val(conf, section, "targetDir", "."),
+                  'extName': self.get_config_val(conf, section, "extName", ".dwg"),
+                  'columnTitle': self.get_config_val(conf, section, "columnTitle", "图号"),
+                  'excelPath': self.get_config_val(conf, section, "excelPath", ""),
+                  'maxDepth': self.get_config_val(conf, section, "maxDepth", 5)
                   }
 
         return config
 
-    def getconfigval(self, conf, section, key, default):
+    def get_config_val(self, conf, section, key, default):
         try:
             val = conf.get(section, key)
             if val is None or val == "":

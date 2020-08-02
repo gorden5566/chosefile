@@ -42,7 +42,7 @@ class Processor:
 
         sheet = workbook.add_sheet("Sheet1")
 
-        sheet.write(0, 0, self.setting.getcolumntitle())
+        sheet.write(0, 0, self.setting.get_column_title())
         sheet.write(1, 0, "1-1")
 
         workbook.save(file_name)
