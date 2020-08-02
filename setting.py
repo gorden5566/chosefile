@@ -59,7 +59,7 @@ class Setting:
             return None
 
         conf = configparser.ConfigParser()
-        conf.read(configpath)
+        conf.read(configpath, encoding="utf-8")
 
         section = "default"
         config = {'sourceDir': self.getconfigval(conf, section, "sourceDir", "."),
