@@ -2,10 +2,7 @@
 # /usr/bin/python3
 
 import os
-import shutil
-
 import wx
-import xlwt
 
 from index import IndexTool
 from logger import Logger
@@ -32,7 +29,7 @@ class ChoseFile(wx.Frame):
         self.parser = Parser(self.logger)
 
         # processor
-        self.processor = Processor(self.logger)
+        self.processor = Processor(self.logger, self.setting)
 
         # 文件索引
         self.indextool = IndexTool(self.setting.getmaxdepth())
@@ -229,25 +226,13 @@ class ChoseFile(wx.Frame):
             try:
                 file_name = fd.GetFilename()
                 dir_name = fd.GetDirectory()
-                self.SaveTemplate(os.path.join(dir_name, file_name))
+                self.processor.export_template(os.path.join(dir_name, file_name))
                 save_msg = wx.MessageDialog(self, '保存成功！', '提示')
             except FileNotFoundError:
                 save_msg = wx.MessageDialog(self, '保存失败，无效的保存路径', '提示')
 
             save_msg.ShowModal()
             save_msg.Destroy()
-
-    # 保存模板文件
-    def SaveTemplate(self, fileName):
-        workbook = xlwt.Workbook()
-
-        sheet = workbook.add_sheet("Sheet1")
-
-        xlwt.easyxf()
-        sheet.write(0, 0, self.setting.getcolumntitle())
-        sheet.write(1, 0, "1-1")
-
-        workbook.save(fileName)
 
     # 使用说明
     def OnUsage(self, event):

@@ -3,11 +3,13 @@
 
 import os
 import shutil
+import xlwt
 
 
 class Processor:
-    def __init__(self, logger):
+    def __init__(self, logger, setting):
         self.logger = logger
+        self.setting = setting
 
     # 复制文件
     def copy_file(self, source, target, file_name):
@@ -34,4 +36,13 @@ class Processor:
 
         return False
 
-    pass
+    # 导出模板文件
+    def export_template(self, file_name):
+        workbook = xlwt.Workbook()
+
+        sheet = workbook.add_sheet("Sheet1")
+
+        sheet.write(0, 0, self.setting.getcolumntitle())
+        sheet.write(1, 0, "1-1")
+
+        workbook.save(file_name)
