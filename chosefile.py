@@ -38,13 +38,13 @@ class ChoseFile(wx.Frame):
 
     def init_ui(self):
         # panel
-        self.MakePanel()
+        self.make_panel()
 
         # create a menu bar
-        self.MakeMenuBar()
+        self.make_menu_bar()
 
         # status bar
-        self.MakeStatusBar()
+        self.make_status_bar()
 
     def init_default(self):
         excel_path = self.setting.get_excel_path()
@@ -52,27 +52,27 @@ class ChoseFile(wx.Frame):
             return
         self.FileName.SetValue(excel_path)
 
-    def MakePanel(self):
+    def make_panel(self):
         # 选择文件按钮
         self.OnSelectBtn = wx.Button(self, label='选择清单', pos=(10, 10), size=(80, 25))
-        self.OnSelectBtn.Bind(wx.EVT_BUTTON, self.OnSelect)
+        self.OnSelectBtn.Bind(wx.EVT_BUTTON, self.on_select)
 
         # 已选择的文件
         self.FileName = wx.TextCtrl(self, pos=(105, 10), size=(400, 25), style=wx.TE_READONLY)
 
         # 处理文件
         self.ProcessBtn = wx.Button(self, label='批量复制', pos=(10, 40), size=(80, 25))
-        self.ProcessBtn.Bind(wx.EVT_BUTTON, self.OnProcess)
+        self.ProcessBtn.Bind(wx.EVT_BUTTON, self.on_process)
 
         # 清空控制台日志
         self.ClearBtn = wx.Button(self, label='清空日志', pos=(105, 40), size=(80, 25))
-        self.ClearBtn.Bind(wx.EVT_BUTTON, self.OnClearConsoleContent)
+        self.ClearBtn.Bind(wx.EVT_BUTTON, self.on_clear_console_content)
 
         # 控制台
         self.ConsoleContent = wx.TextCtrl(self, pos=(10, 70), size=(605, 345), style=wx.TE_MULTILINE | wx.TE_READONLY)
 
     # 打开文件
-    def OnSelect(self, event):
+    def on_select(self, event):
         wildcard = 'Microsoft Excel 97/2000/XP/2003 Workbook(*.xls)|*.xls|Microsoft Excel 2007/2010 Workbook(*.xlsx)|*.xlsx'
         dialog = wx.FileDialog(None, "请选择要处理的Excel文件", os.getcwd(), '', wildcard)
 
@@ -80,7 +80,7 @@ class ChoseFile(wx.Frame):
             self.FileName.SetValue(dialog.GetPath())
             dialog.Destroy
 
-    def OnProcess(self, event):
+    def on_process(self, event):
         # 检查索引是否存在，若不存在则构建
         has_build_db = self.index_tool.check_db()
         if not has_build_db:
@@ -119,7 +119,7 @@ class ChoseFile(wx.Frame):
         successNum = 0
         for name in nameArr:
             sourceName = name + self.setting.get_ext_name();
-            sourcePath = self.getsourcepath(sourceName)
+            sourcePath = self.get_source_path(sourceName)
             total += 1
 
             if sourcePath is None:
@@ -138,69 +138,69 @@ class ChoseFile(wx.Frame):
         return
 
     # 查询文件所在目录
-    def getsourcepath(self, sourceName):
+    def get_source_path(self, sourceName):
         # 默认位置为 self.setting.getsourcedir()
         # 因为文件可能在子文件夹中，所以还需考虑递归遍历所有子文件夹
         # 为加快查询速度，如下为从索引中查询对应结果
         index = self.index_tool.find(sourceName)
         return self.index_tool.get_full_path(index)
 
-    def OnClearConsoleContent(self, event):
+    def on_clear_console_content(self, event):
         self.ConsoleContent.SetValue("")
         # wx.MessageBox("已清空", "处理结果", wx.OK | wx.ICON_INFORMATION)
 
     # 退出菜单
-    def OnExit(self, event):
+    def on_exit(self, event):
         """Close the frame, terminating the application."""
         self.logger.close()
         self.Close(True)
 
     # 生成菜单
-    def MakeMenuBar(self):
+    def make_menu_bar(self):
         # Make the menu bar and add the two menus to it. The '&' defines
         # that the next letter is the "mnemonic" for the menu item. On the
         # platforms that support it those letters are underlined and can be
         # triggered from the keyboard.
         menuBar = wx.MenuBar()
 
-        menuBar.Append(self.MakeFileMenu(), "&文件")
-        menuBar.Append(self.MakeSettingMenu(), "&设置")
-        menuBar.Append(self.MakeHelpMenu(), "&帮助")
+        menuBar.Append(self.make_file_menu(), "&文件")
+        menuBar.Append(self.make_setting_menu(), "&设置")
+        menuBar.Append(self.make_help_menu(), "&帮助")
 
         # Give the menu bar to the frame
         self.SetMenuBar(menuBar)
 
     # 文件菜单
-    def MakeFileMenu(self):
+    def make_file_menu(self):
         fileMenu = wx.Menu()
 
         # The "\t..." syntax defines an accelerator key that also triggers
         # the same event
         openItem = fileMenu.Append(-1, "&选择清单\tCtrl-O", "选择Excel清单文件")
-        self.Bind(wx.EVT_MENU, self.OnSelect, openItem)
+        self.Bind(wx.EVT_MENU, self.on_select, openItem)
 
         exportItem = fileMenu.Append(-1, "&导出模板\tCtrl-E", "导出模板文件")
-        self.Bind(wx.EVT_MENU, self.OnExportTemplate, exportItem)
+        self.Bind(wx.EVT_MENU, self.on_export_template, exportItem)
 
         # 分隔符
         fileMenu.AppendSeparator()
 
         exitItem = fileMenu.Append(-1, "&退出\tCtrl-Q", "退出")
-        self.Bind(wx.EVT_MENU, self.OnExit, exitItem)
+        self.Bind(wx.EVT_MENU, self.on_exit, exitItem)
 
         return fileMenu
 
     # 模板菜单
-    def MakeSettingMenu(self):
+    def make_setting_menu(self):
         settingMenu = wx.Menu()
 
         buildIndexItem = settingMenu.Append(-1, "&重建索引\tCtrl-B", "修改源文件路径[sourceDir]后，需要重新构建文件索引")
-        self.Bind(wx.EVT_MENU, self.OnBuildIndexTemplate, buildIndexItem)
+        self.Bind(wx.EVT_MENU, self.on_build_index, buildIndexItem)
 
         return settingMenu
 
     # 重建索引设置
-    def OnBuildIndexTemplate(self, event):
+    def on_build_index(self, event):
         result = self.build_Index()
         if result:
             sourcedir = self.setting.get_source_dir()
@@ -210,19 +210,19 @@ class ChoseFile(wx.Frame):
             wx.MessageBox("重建索引失败", "提示", wx.OK | wx.ICON_WARNING)
 
     # 帮助菜单
-    def MakeHelpMenu(self):
+    def make_help_menu(self):
         helpMenu = wx.Menu()
 
         usageItem = helpMenu.Append(-1, "&说明\tCtrl-H", "查看使用说明")
-        self.Bind(wx.EVT_MENU, self.OnUsage, usageItem)
+        self.Bind(wx.EVT_MENU, self.on_usage, usageItem)
 
         aboutItem = helpMenu.Append(-1, "&关于", "关于")
-        self.Bind(wx.EVT_MENU, self.OnAbout, aboutItem)
+        self.Bind(wx.EVT_MENU, self.on_about, aboutItem)
 
         return helpMenu
 
     # 导出模板文件
-    def OnExportTemplate(self, event):
+    def on_export_template(self, event):
         fd = wx.FileDialog(self, message='导出模板文件', defaultDir='', defaultFile='图号清单模板',
                            wildcard='Microsoft Excel 97/2000/XP/2003 Workbook(*.xls)|*.xls|Microsoft Excel 2007/2010 Workbook(*.xlsx)|*.xlsx',
                            style=wx.FD_SAVE)
@@ -239,7 +239,7 @@ class ChoseFile(wx.Frame):
             save_msg.Destroy()
 
     # 使用说明
-    def OnUsage(self, event):
+    def on_usage(self, event):
         message = "1.打开[config.ini]，配置[sourceDir]等参数\n" \
                   + "2.点击[选择]按钮，选择要处理的清单文件\n" \
                   + "3.点击[处理]按钮，选择要保存的路径，确认后执行\n" \
@@ -248,17 +248,17 @@ class ChoseFile(wx.Frame):
         wx.MessageBox(message, "使用说明", wx.OK | wx.ICON_INFORMATION)
 
     # 关于菜单
-    def OnAbout(self, event):
+    def on_about(self, event):
         """Display an About Dialog"""
-        wx.MessageBox("批量复制文件", self.GetVersion(), wx.OK | wx.ICON_INFORMATION)
+        wx.MessageBox("批量复制文件", self.get_version(), wx.OK | wx.ICON_INFORMATION)
 
     # 状态栏
-    def MakeStatusBar(self):
+    def make_status_bar(self):
         self.CreateStatusBar()
-        self.SetStatusText("欢迎使用 " + self.GetVersion())
+        self.SetStatusText("欢迎使用 " + self.get_version())
 
     # 版本号
-    def GetVersion(self):
+    def get_version(self):
         return "ChoseFile V0.0.1"
 
     def build_Index(self):
