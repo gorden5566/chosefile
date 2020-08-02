@@ -100,6 +100,9 @@ class ChoseFile(wx.Frame):
         self.logger.Log("[目标文件夹]\t" + targetPath)
 
         nameArr = self.ParseXls(fileName, self.setting.getcolumntitle())
+	if nameArr is None:
+	     wx.MessageBox("解析结果为空", "处理结果", wx.OK | wx.ICON_WARNING)
+             return
 
         # 复制文件
         total = 0
@@ -291,6 +294,7 @@ class ChoseFile(wx.Frame):
         ## 计算实际序号
         columnIndex = titleArr.index(columnTitle)
         if columnIndex < 0:
+            self.logger.Log("[解析excel失败]\t" + columnTitle)
             return None
 
         nameArr = []
