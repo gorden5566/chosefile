@@ -100,9 +100,9 @@ class ChoseFile(wx.Frame):
         self.logger.Log("[目标文件夹]\t" + targetPath)
 
         nameArr = self.ParseXls(fileName, self.setting.getcolumntitle())
-	if nameArr is None:
-	     wx.MessageBox("解析结果为空", "处理结果", wx.OK | wx.ICON_WARNING)
-             return
+        if nameArr is None:
+            wx.MessageBox("解析结果为空", "处理结果", wx.OK | wx.ICON_WARNING)
+            return
 
         # 复制文件
         total = 0
@@ -289,22 +289,33 @@ class ChoseFile(wx.Frame):
         workbook = xlrd.open_workbook(filePath)
         sheet = workbook.sheet_by_index(0)
 
-        titleArr = sheet.row_values(0)
+        # 查找title位置
+        titlePos = self.findTitle(sheet, columnTitle)
 
-        ## 计算实际序号
-        columnIndex = titleArr.index(columnTitle)
-        if columnIndex < 0:
+        if titlePos is None:
             self.logger.Log("[解析excel失败]\t" + columnTitle)
             return None
 
+        titleCol = titlePos["col"]
+        titleRow = titlePos["row"]
+
         nameArr = []
-        for rowIndex in range(1, sheet.nrows):
-            name = sheet.cell_value(rowIndex, columnIndex)
+        for rowIndex in range(titleRow + 1, sheet.nrows):
+            name = sheet.cell_value(rowIndex, titleCol)
             stripName = name.replace(' ', '')
             if stripName == '':
                 continue
             nameArr.append(stripName)
         return nameArr
+
+    def findTitle(self, sheet, columnTitle):
+        for i in range(20):
+            titleArr = sheet.row_values(i)
+            columnIndex = titleArr.index(columnTitle)
+            if columnIndex >= 0:
+                return {"row": i, "col": columnIndex}
+
+        return None
 
     def buildIndex(self):
         sourcedir = self.setting.getsourcedir()
