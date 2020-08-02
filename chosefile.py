@@ -193,7 +193,11 @@ class ChoseFile(wx.Frame):
     def OnBuildIndexTemplate(self, event):
         result = self.buildIndex()
         if result:
-            wx.MessageBox("重建索引成功", "提示", wx.OK | wx.ICON_INFORMATION)
+            sourcedir = self.setting.getsourcedir()
+            message = "重建索引成功[" + sourcedir + "]"
+            wx.MessageBox(message, "提示", wx.OK | wx.ICON_INFORMATION)
+        else:
+            wx.MessageBox("重建索引失败", "提示", wx.OK | wx.ICON_WARNING)
 
     # 帮助菜单
     def MakeHelpMenu(self):
