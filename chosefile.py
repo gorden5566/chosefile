@@ -40,13 +40,13 @@ class ChoseFile(wx.Frame):
         # status bar
         self.MakeStatusBar()
 
-        self.initDefault()
+        self.init_default()
 
-    def initDefault(self):
-        excelpath = self.setting.get_excel_path()
-        if excelpath is None:
+    def init_default(self):
+        excel_path = self.setting.get_excel_path()
+        if excel_path is None:
             return
-        self.FileName.SetValue(excelpath)
+        self.FileName.SetValue(excel_path)
 
     def MakePanel(self):
         # 选择文件按钮
