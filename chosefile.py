@@ -78,7 +78,7 @@ class ChoseFile(wx.Frame):
 
     def OnProcess(self, event):
         # 检查索引是否存在，若不存在则构建
-        hasbuilddb = self.indextool.checkdb()
+        hasbuilddb = self.indextool.check_db()
         if not hasbuilddb:
             result = self.buildIndex()
             if not result:
@@ -139,7 +139,7 @@ class ChoseFile(wx.Frame):
         # 因为文件可能在子文件夹中，所以还需考虑递归遍历所有子文件夹
         # 为加快查询速度，如下为从索引中查询对应结果
         index = self.indextool.find(sourceName)
-        return self.indextool.getfullpath(index)
+        return self.indextool.get_full_path(index)
 
     def OnClearConsoleContent(self, event):
         self.ConsoleContent.SetValue("")
@@ -265,7 +265,7 @@ class ChoseFile(wx.Frame):
         if not os.path.isdir(sourcedir):
             wx.MessageBox("源文件夹不存在，请先打开[config.ini]设置[sourceDir]", "提示", wx.OK | wx.ICON_WARNING)
             return False
-        self.indextool.buildindex(sourcedir).save()
+        self.indextool.build_index(sourcedir).save()
         return True
 
 
