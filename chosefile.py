@@ -16,8 +16,8 @@ class ChoseFile(wx.Frame):
         super().__init__(parent=None, title='ChoseFile', size=(640, 505),
                          style=wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX | wx.CLIP_CHILDREN)
 
-        # panel
-        self.MakePanel()
+        # ui
+        self.init_ui()
 
         # logger
         self.logger = Logger(self.ConsoleContent)
@@ -31,16 +31,20 @@ class ChoseFile(wx.Frame):
         # processor
         self.processor = Processor(self.logger, self.setting)
 
-        # 文件索引
+        # index
         self.index_tool = IndexTool(self.setting.get_max_depth())
+
+        self.init_default()
+
+    def init_ui(self):
+        # panel
+        self.MakePanel()
 
         # create a menu bar
         self.MakeMenuBar()
 
         # status bar
         self.MakeStatusBar()
-
-        self.init_default()
 
     def init_default(self):
         excel_path = self.setting.get_excel_path()
