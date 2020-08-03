@@ -128,6 +128,11 @@ class ChoseFile(wx.Frame):
             wx.MessageBox("解析结果为空", "处理结果", wx.OK | wx.ICON_WARNING)
             return
 
+        self.do_copy_file(target_path, name_arr)
+
+        return
+
+    def do_copy_file(self, target_path, name_arr):
         # 复制文件
         total = 0
         success_num = 0
@@ -149,14 +154,13 @@ class ChoseFile(wx.Frame):
         self.logger.Log("--------------------------------------------------------------------")
 
         wx.MessageBox(message, "处理结果", wx.OK | wx.ICON_INFORMATION)
-        return
 
     # 查询文件所在目录
-    def get_source_path(self, sourceName):
+    def get_source_path(self, source_name):
         # 默认位置为 self.setting.getsourcedir()
         # 因为文件可能在子文件夹中，所以还需考虑递归遍历所有子文件夹
         # 为加快查询速度，如下为从索引中查询对应结果
-        index = self.index_tool.find(sourceName)
+        index = self.index_tool.find(source_name)
         return self.index_tool.get_full_path(index)
 
     def on_clear_console_content(self, event):

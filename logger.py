@@ -5,8 +5,8 @@ import time
 
 
 class Logger:
-    def __init__(self, consolecontent):
-        self.console_content = consolecontent
+    def __init__(self, console_content):
+        self.console_content = console_content
         self.file_logger = self.create_file_logger()
 
     @staticmethod
