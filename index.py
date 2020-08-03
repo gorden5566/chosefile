@@ -75,7 +75,7 @@ class IndexTool:
             return index
 
         parent_path = ""
-        if not parent is None:
+        if parent is not None:
             parent_path = parent.get_path()
         path_with_name = os.path.join(self.index_file.get_base_path(), parent_path, path, name)
 
