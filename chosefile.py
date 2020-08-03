@@ -2,13 +2,14 @@
 # /usr/bin/python3
 
 import os
+
 import wx
 
 from index import IndexTool
 from logger import Logger
-from setting import Setting
 from parser import Parser
 from processor import Processor
+from setting import Setting
 
 
 class ChoseFile(wx.Frame):
@@ -48,9 +49,12 @@ class ChoseFile(wx.Frame):
 
     def init_default(self):
         excel_path = self.setting.get_excel_path()
-        if excel_path is None:
-            return
-        self.FileName.SetValue(excel_path)
+        if excel_path is not None:
+            self.FileName.SetValue(excel_path)
+
+        target_dir = self.setting.get_target_dir()
+        if target_dir is not None:
+            self.target_dir_text.SetValue(target_dir)
 
     def make_panel(self):
         # 选择文件按钮
@@ -60,16 +64,23 @@ class ChoseFile(wx.Frame):
         # 已选择的文件
         self.FileName = wx.TextCtrl(self, pos=(105, 10), size=(400, 25), style=wx.TE_READONLY)
 
+        # 目标地址
+        self.target_btn = wx.Button(self, label='目标地址', pos=(10, 40), size=(80, 25))
+        self.target_btn.Bind(wx.EVT_BUTTON, self.on_target)
+
+        # 已选择的目标地址
+        self.target_dir_text = wx.TextCtrl(self, pos=(105, 40), size=(400, 25), style=wx.TE_READONLY)
+
         # 处理文件
-        self.ProcessBtn = wx.Button(self, label='批量复制', pos=(10, 40), size=(80, 25))
+        self.ProcessBtn = wx.Button(self, label='批量复制', pos=(10, 70), size=(80, 25))
         self.ProcessBtn.Bind(wx.EVT_BUTTON, self.on_process)
 
         # 清空控制台日志
-        self.ClearBtn = wx.Button(self, label='清空日志', pos=(105, 40), size=(80, 25))
+        self.ClearBtn = wx.Button(self, label='清空日志', pos=(105, 70), size=(80, 25))
         self.ClearBtn.Bind(wx.EVT_BUTTON, self.on_clear_console_content)
 
         # 控制台
-        self.ConsoleContent = wx.TextCtrl(self, pos=(10, 70), size=(605, 345), style=wx.TE_MULTILINE | wx.TE_READONLY)
+        self.ConsoleContent = wx.TextCtrl(self, pos=(10, 100), size=(605, 345), style=wx.TE_MULTILINE | wx.TE_READONLY)
 
     # 打开文件
     def on_select(self, event):
@@ -80,6 +91,14 @@ class ChoseFile(wx.Frame):
             self.FileName.SetValue(dialog.GetPath())
             dialog.Destroy
 
+    # 打开文件
+    def on_target(self, event):
+        dialog = wx.DirDialog(self, message="请选择要保存的路径", defaultPath=self.setting.get_target_dir(),
+                              style=wx.DD_DEFAULT_STYLE)
+        if dialog.ShowModal() == wx.ID_OK:
+            self.target_dir.SetValue(dialog.GetPath())
+        dialog.Destroy()
+
     def on_process(self, event):
         # 检查索引是否存在，若不存在则构建
         has_build_db = self.index_tool.check_db()
@@ -88,36 +107,31 @@ class ChoseFile(wx.Frame):
             if not result:
                 return
 
-        fileName = self.FileName.GetValue()
-        if fileName is None or fileName == '':
+        file_name = self.FileName.GetValue()
+        if file_name is None or file_name == '':
             wx.MessageBox("请先选择清单文件", "处理结果", wx.OK | wx.ICON_WARNING)
             return
 
-        if not os.path.exists(fileName):
-            wx.MessageBox("文件不存在: " + fileName, "处理结果", wx.OK | wx.ICON_WARNING)
+        if not os.path.exists(file_name):
+            wx.MessageBox("文件不存在: " + file_name, "处理结果", wx.OK | wx.ICON_WARNING)
             return
 
-        targetPath = None
-        dlg = wx.DirDialog(self, message="请选择要保存的路径", defaultPath=self.setting.get_target_dir(),
-                           style=wx.DD_DEFAULT_STYLE)
-        if dlg.ShowModal() == wx.ID_OK:
-            targetPath = dlg.GetPath()
-        dlg.Destroy()
-
-        if targetPath is None or targetPath == '':
+        target_path = self.target_dir_text.GetValue()
+        if target_path is None or target_path == '':
+            wx.MessageBox("请先选择目标地址", "处理结果", wx.OK | wx.ICON_WARNING)
             return
 
-        self.logger.Log("[目标文件夹]\t" + targetPath)
+        self.logger.Log("[目标文件夹]\t" + target_path)
 
-        nameArr = self.parser.parse_excel(fileName, self.setting.get_column_title())
-        if nameArr is None:
+        name_arr = self.parser.parse_excel(file_name, self.setting.get_column_title())
+        if name_arr is None:
             wx.MessageBox("解析结果为空", "处理结果", wx.OK | wx.ICON_WARNING)
             return
 
         # 复制文件
         total = 0
         successNum = 0
-        for name in nameArr:
+        for name in name_arr:
             sourceName = name + self.setting.get_ext_name();
             sourcePath = self.get_source_path(sourceName)
             total += 1
@@ -126,7 +140,7 @@ class ChoseFile(wx.Frame):
                 self.logger.Log("[索引结果空]\t" + sourceName)
                 continue
 
-            success = self.processor.copy_file(sourcePath, targetPath, sourceName)
+            success = self.processor.copy_file(sourcePath, target_path, sourceName)
             if success:
                 successNum += 1
 
