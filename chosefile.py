@@ -21,7 +21,7 @@ class ChoseFile(wx.Frame):
         self.init_ui()
 
         # logger
-        self.logger = Logger(self.ConsoleContent)
+        self.logger = Logger(self.console_text)
 
         # config
         self.setting = Setting(self.logger)
@@ -50,7 +50,7 @@ class ChoseFile(wx.Frame):
     def init_default(self):
         excel_path = self.setting.get_excel_path()
         if excel_path is not None:
-            self.FileName.SetValue(excel_path)
+            self.file_name_text.SetValue(excel_path)
 
         target_dir = self.setting.get_target_dir()
         if target_dir is not None:
@@ -58,11 +58,11 @@ class ChoseFile(wx.Frame):
 
     def make_panel(self):
         # 选择文件按钮
-        self.OnSelectBtn = wx.Button(self, label='选择清单', pos=(10, 10), size=(80, 25))
-        self.OnSelectBtn.Bind(wx.EVT_BUTTON, self.on_select)
+        self.select_btn = wx.Button(self, label='选择清单', pos=(10, 10), size=(80, 25))
+        self.select_btn.Bind(wx.EVT_BUTTON, self.on_select)
 
         # 已选择的文件
-        self.FileName = wx.TextCtrl(self, pos=(105, 10), size=(400, 25), style=wx.TE_READONLY)
+        self.file_name_text = wx.TextCtrl(self, pos=(105, 10), size=(400, 25), style=wx.TE_READONLY)
 
         # 目标地址
         self.target_btn = wx.Button(self, label='目标地址', pos=(10, 40), size=(80, 25))
@@ -72,15 +72,15 @@ class ChoseFile(wx.Frame):
         self.target_dir_text = wx.TextCtrl(self, pos=(105, 40), size=(400, 25), style=wx.TE_READONLY)
 
         # 处理文件
-        self.ProcessBtn = wx.Button(self, label='批量复制', pos=(10, 70), size=(80, 25))
-        self.ProcessBtn.Bind(wx.EVT_BUTTON, self.on_process)
+        self.process_btn = wx.Button(self, label='批量复制', pos=(10, 70), size=(80, 25))
+        self.process_btn.Bind(wx.EVT_BUTTON, self.on_process)
 
         # 清空控制台日志
-        self.ClearBtn = wx.Button(self, label='清空日志', pos=(105, 70), size=(80, 25))
-        self.ClearBtn.Bind(wx.EVT_BUTTON, self.on_clear_console_content)
+        self.clear_btn = wx.Button(self, label='清空日志', pos=(105, 70), size=(80, 25))
+        self.clear_btn.Bind(wx.EVT_BUTTON, self.on_clear_console_content)
 
         # 控制台
-        self.ConsoleContent = wx.TextCtrl(self, pos=(10, 100), size=(605, 345), style=wx.TE_MULTILINE | wx.TE_READONLY)
+        self.console_text = wx.TextCtrl(self, pos=(10, 100), size=(605, 345), style=wx.TE_MULTILINE | wx.TE_READONLY)
 
     # 打开文件
     def on_select(self, event):
@@ -88,7 +88,7 @@ class ChoseFile(wx.Frame):
         dialog = wx.FileDialog(None, "请选择要处理的Excel文件", os.getcwd(), '', wildcard)
 
         if dialog.ShowModal() == wx.ID_OK:
-            self.FileName.SetValue(dialog.GetPath())
+            self.file_name_text.SetValue(dialog.GetPath())
             dialog.Destroy
 
     # 打开文件
@@ -107,7 +107,7 @@ class ChoseFile(wx.Frame):
             if not result:
                 return
 
-        file_name = self.FileName.GetValue()
+        file_name = self.file_name_text.GetValue()
         if file_name is None or file_name == '':
             wx.MessageBox("请先选择清单文件", "处理结果", wx.OK | wx.ICON_WARNING)
             return
@@ -130,21 +130,21 @@ class ChoseFile(wx.Frame):
 
         # 复制文件
         total = 0
-        successNum = 0
+        success_num = 0
         for name in name_arr:
-            sourceName = name + self.setting.get_ext_name();
-            sourcePath = self.get_source_path(sourceName)
+            source_name = name + self.setting.get_ext_name();
+            source_path = self.get_source_path(source_name)
             total += 1
 
-            if sourcePath is None:
-                self.logger.Log("[索引结果空]\t" + sourceName)
+            if source_path is None:
+                self.logger.Log("[索引结果空]\t" + source_name)
                 continue
 
-            success = self.processor.copy_file(sourcePath, target_path, sourceName)
+            success = self.processor.copy_file(source_path, target_path, source_name)
             if success:
-                successNum += 1
+                success_num += 1
 
-        message = "共处理" + str(total) + "个文件，处理成功" + str(successNum) + "个"
+        message = "共处理" + str(total) + "个文件，处理成功" + str(success_num) + "个"
         self.logger.Log("[结果汇总]\t" + message)
         self.logger.Log("--------------------------------------------------------------------")
 
@@ -160,7 +160,7 @@ class ChoseFile(wx.Frame):
         return self.index_tool.get_full_path(index)
 
     def on_clear_console_content(self, event):
-        self.ConsoleContent.SetValue("")
+        self.console_text.SetValue("")
         # wx.MessageBox("已清空", "处理结果", wx.OK | wx.ICON_INFORMATION)
 
     # 退出菜单
@@ -175,65 +175,65 @@ class ChoseFile(wx.Frame):
         # that the next letter is the "mnemonic" for the menu item. On the
         # platforms that support it those letters are underlined and can be
         # triggered from the keyboard.
-        menuBar = wx.MenuBar()
+        menu_bar = wx.MenuBar()
 
-        menuBar.Append(self.make_file_menu(), "&文件")
-        menuBar.Append(self.make_setting_menu(), "&设置")
-        menuBar.Append(self.make_help_menu(), "&帮助")
+        menu_bar.Append(self.make_file_menu(), "&文件")
+        menu_bar.Append(self.make_setting_menu(), "&设置")
+        menu_bar.Append(self.make_help_menu(), "&帮助")
 
         # Give the menu bar to the frame
-        self.SetMenuBar(menuBar)
+        self.SetMenuBar(menu_bar)
 
     # 文件菜单
     def make_file_menu(self):
-        fileMenu = wx.Menu()
+        file_menu = wx.Menu()
 
         # The "\t..." syntax defines an accelerator key that also triggers
         # the same event
-        openItem = fileMenu.Append(-1, "&选择清单\tCtrl-O", "选择Excel清单文件")
-        self.Bind(wx.EVT_MENU, self.on_select, openItem)
+        open_item = file_menu.Append(-1, "&选择清单\tCtrl-O", "选择Excel清单文件")
+        self.Bind(wx.EVT_MENU, self.on_select, open_item)
 
-        exportItem = fileMenu.Append(-1, "&导出模板\tCtrl-E", "导出模板文件")
-        self.Bind(wx.EVT_MENU, self.on_export_template, exportItem)
+        export_item = file_menu.Append(-1, "&导出模板\tCtrl-E", "导出模板文件")
+        self.Bind(wx.EVT_MENU, self.on_export_template, export_item)
 
         # 分隔符
-        fileMenu.AppendSeparator()
+        file_menu.AppendSeparator()
 
-        exitItem = fileMenu.Append(-1, "&退出\tCtrl-Q", "退出")
-        self.Bind(wx.EVT_MENU, self.on_exit, exitItem)
+        exit_item = file_menu.Append(-1, "&退出\tCtrl-Q", "退出")
+        self.Bind(wx.EVT_MENU, self.on_exit, exit_item)
 
-        return fileMenu
+        return file_menu
 
     # 模板菜单
     def make_setting_menu(self):
-        settingMenu = wx.Menu()
+        setting_menu = wx.Menu()
 
-        buildIndexItem = settingMenu.Append(-1, "&重建索引\tCtrl-B", "修改源文件路径[sourceDir]后，需要重新构建文件索引")
-        self.Bind(wx.EVT_MENU, self.on_build_index, buildIndexItem)
+        build_index_item = setting_menu.Append(-1, "&重建索引\tCtrl-B", "修改源文件路径[sourceDir]后，需要重新构建文件索引")
+        self.Bind(wx.EVT_MENU, self.on_build_index, build_index_item)
 
-        return settingMenu
+        return setting_menu
 
     # 重建索引设置
     def on_build_index(self, event):
         result = self.build_index()
         if result:
-            sourcedir = self.setting.get_source_dir()
-            message = "重建索引成功[" + sourcedir + "]"
+            source_dir = self.setting.get_source_dir()
+            message = "重建索引成功[" + source_dir + "]"
             wx.MessageBox(message, "提示", wx.OK | wx.ICON_INFORMATION)
         else:
             wx.MessageBox("重建索引失败", "提示", wx.OK | wx.ICON_WARNING)
 
     # 帮助菜单
     def make_help_menu(self):
-        helpMenu = wx.Menu()
+        help_menu = wx.Menu()
 
-        usageItem = helpMenu.Append(-1, "&说明\tCtrl-H", "查看使用说明")
-        self.Bind(wx.EVT_MENU, self.on_usage, usageItem)
+        usage_item = help_menu.Append(-1, "&说明\tCtrl-H", "查看使用说明")
+        self.Bind(wx.EVT_MENU, self.on_usage, usage_item)
 
-        aboutItem = helpMenu.Append(-1, "&关于", "关于")
-        self.Bind(wx.EVT_MENU, self.on_about, aboutItem)
+        about_item = help_menu.Append(-1, "&关于", "关于")
+        self.Bind(wx.EVT_MENU, self.on_about, about_item)
 
-        return helpMenu
+        return help_menu
 
     # 导出模板文件
     def on_export_template(self, event):
