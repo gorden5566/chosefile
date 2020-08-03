@@ -17,14 +17,14 @@ class ChoseFile(wx.Frame):
         super().__init__(parent=None, title='ChoseFile', size=(640, 505),
                          style=wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX | wx.CLIP_CHILDREN)
 
+        # config
+        self.setting = Setting()
+
         # ui
         self.init_ui()
 
         # logger
         self.logger = Logger(self.console_text)
-
-        # config
-        self.setting = Setting(self.logger)
 
         # parser
         self.parser = Parser(self.logger)

@@ -7,8 +7,7 @@ import os
 
 class Setting:
 
-    def __init__(self, logger):
-        self.logger = logger
+    def __init__(self):
         self.config = self.get_config("config.ini")
 
     def get_source_dir(self):
