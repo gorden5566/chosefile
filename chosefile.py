@@ -136,6 +136,7 @@ class ChoseFile(wx.Frame):
         # 复制文件
         total = 0
         success_num = 0
+        failed_files = []
         for name in name_arr:
             source_name = name + self.setting.get_ext_name();
             source_path = self.get_source_path(source_name)
@@ -143,14 +144,20 @@ class ChoseFile(wx.Frame):
 
             if source_path is None:
                 self.logger.Log("[索引结果空]\t" + source_name)
+                failed_files.append(source_name)
                 continue
 
             success = self.processor.copy_file(source_path, target_path, source_name)
             if success:
                 success_num += 1
+            else:
+                failed_files.append(source_name)
 
         message = "共处理" + str(total) + "个文件，处理成功" + str(success_num) + "个"
         self.logger.Log("[结果汇总]\t" + message)
+        failed_file_name = self.logger.log_failed(failed_files)
+        if failed_file_name is not None:
+            self.logger.Log("[失败记录]\t" + failed_file_name)
         self.logger.Log("--------------------------------------------------------------------")
 
         wx.MessageBox(message, "处理结果", wx.OK | wx.ICON_INFORMATION)

@@ -25,3 +25,18 @@ class Logger:
         self.console_content.AppendText(format_message)
 
         self.file_logger.write(format_message)
+
+    def log_failed(self, failed_files):
+        if not failed_files:
+            return None
+
+        now = time.strftime("%Y%m%d%H%M%S", time.localtime())
+        failed_name = "failed" + now + ".txt"
+        f = open(failed_name, "a+")
+        for file in failed_files:
+            f.write(file + "\n")
+
+        f.close()
+
+        return failed_name
+
