@@ -2,6 +2,7 @@
 # /usr/bin/python3
 
 import time
+import os
 
 
 class Logger:
@@ -26,12 +27,12 @@ class Logger:
 
         self.file_logger.write(format_message)
 
-    def log_failed(self, failed_files):
+    def log_failed(self, file_path, failed_files):
         if not failed_files:
             return None
 
         now = time.strftime("%Y%m%d%H%M%S", time.localtime())
-        failed_name = "failed" + now + ".txt"
+        failed_name = os.path.join(file_path, "failed" + now + ".txt")
         f = open(failed_name, "a+")
         for file in failed_files:
             f.write(file + "\n")

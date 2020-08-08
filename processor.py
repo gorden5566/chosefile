@@ -83,7 +83,7 @@ class Processor:
 
         message = "共处理" + str(total) + "个文件，处理成功" + str(success_num) + "个"
         self.logger.Log("[结果汇总]\t" + message)
-        failed_file_name = self.logger.log_failed(failed_files)
+        failed_file_name = self.logger.log_failed(target_path, failed_files)
         if failed_file_name is not None:
             self.logger.Log("[失败记录]\t" + failed_file_name)
         self.logger.Log("--------------------------------------------------------------------")
