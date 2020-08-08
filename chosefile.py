@@ -193,9 +193,7 @@ class ChoseFile(wx.Frame):
     def on_build_index(self, event):
         result = self.processor.build_index()
         if result:
-            source_dir = self.setting.get_source_dir()
-            message = "重建索引成功[" + source_dir + "]"
-            wx.MessageBox(message, "提示", wx.OK | wx.ICON_INFORMATION)
+            wx.MessageBox("重建索引成功", "提示", wx.OK | wx.ICON_INFORMATION)
         else:
             wx.MessageBox("重建索引失败", "提示", wx.OK | wx.ICON_WARNING)
 

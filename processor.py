@@ -24,6 +24,7 @@ class Processor:
             self.logger.Log("源文件夹不存在，请先打开[config.ini]设置[sourceDir]")
             return False
         self.index_tool.build_index(source_dir).save()
+        self.logger.Log("[构建索引]\t" + source_dir)
         return True
 
     # 前置检查
