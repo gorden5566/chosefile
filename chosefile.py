@@ -5,7 +5,6 @@ import os
 
 import wx
 
-from index import IndexTool
 from logger import Logger
 from parser import Parser
 from processor import Processor
@@ -30,10 +29,7 @@ class ChoseFile(wx.Frame):
         self.parser = Parser(self.logger)
 
         # processor
-        self.processor = Processor(self.logger)
-
-        # index
-        self.index_tool = IndexTool(self.setting.get_max_depth())
+        self.processor = Processor(self.logger, self.setting)
 
         self.init_default()
 
@@ -96,16 +92,15 @@ class ChoseFile(wx.Frame):
         dialog = wx.DirDialog(self, message="请选择要保存的路径", defaultPath=self.setting.get_target_dir(),
                               style=wx.DD_DEFAULT_STYLE)
         if dialog.ShowModal() == wx.ID_OK:
-            self.target_dir.SetValue(dialog.GetPath())
+            self.target_dir_text.SetValue(dialog.GetPath())
         dialog.Destroy()
 
     def on_process(self, event):
         # 检查索引是否存在，若不存在则构建
-        has_build_db = self.index_tool.check_db()
-        if not has_build_db:
-            result = self.build_index()
-            if not result:
-                return
+        pre_check_result = self.processor.pre_check()
+        if not pre_check_result:
+            wx.MessageBox("构建索引失败，请检查日志提示信息", "处理结果", wx.OK | wx.ICON_WARNING)
+            return
 
         file_name = self.file_name_text.GetValue()
         if file_name is None or file_name == '':
@@ -132,47 +127,13 @@ class ChoseFile(wx.Frame):
             wx.MessageBox("解析结果为空", "处理结果", wx.OK | wx.ICON_WARNING)
             return
 
-        self.do_copy_file(target_path, name_arr)
+        # 执行处理流程
+        process_result = self.processor.process(target_path, name_arr)
 
-        return
-
-    def do_copy_file(self, target_path, name_arr):
-        # 复制文件
-        total = 0
-        success_num = 0
-        failed_files = []
-        for name in name_arr:
-            source_name = name + self.setting.get_ext_name();
-            source_path = self.get_source_path(source_name)
-            total += 1
-
-            if source_path is None:
-                self.logger.Log("[索引结果空]\t" + source_name)
-                failed_files.append(source_name)
-                continue
-
-            success = self.processor.copy_file(source_path, target_path, source_name)
-            if success:
-                success_num += 1
-            else:
-                failed_files.append(source_name)
-
-        message = "共处理" + str(total) + "个文件，处理成功" + str(success_num) + "个"
-        self.logger.Log("[结果汇总]\t" + message)
-        failed_file_name = self.logger.log_failed(failed_files)
-        if failed_file_name is not None:
-            self.logger.Log("[失败记录]\t" + failed_file_name)
-        self.logger.Log("--------------------------------------------------------------------")
-
+        message = "共处理" + str(process_result["total"]) + "个文件，处理成功" + str(process_result["success_num"]) + "个"
         wx.MessageBox(message, "处理结果", wx.OK | wx.ICON_INFORMATION)
 
-    # 查询文件所在目录
-    def get_source_path(self, source_name):
-        # 默认位置为 self.setting.getsourcedir()
-        # 因为文件可能在子文件夹中，所以还需考虑递归遍历所有子文件夹
-        # 为加快查询速度，如下为从索引中查询对应结果
-        index = self.index_tool.find(source_name)
-        return self.index_tool.get_full_path(index)
+        return
 
     def on_clear_console_content(self, event):
         self.console_text.SetValue("")
@@ -230,7 +191,7 @@ class ChoseFile(wx.Frame):
 
     # 重建索引设置
     def on_build_index(self, event):
-        result = self.build_index()
+        result = self.processor.build_index()
         if result:
             source_dir = self.setting.get_source_dir()
             message = "重建索引成功[" + source_dir + "]"
@@ -290,17 +251,6 @@ class ChoseFile(wx.Frame):
     # 版本号
     def get_version(self):
         return "ChoseFile V0.0.1"
-
-    def build_index(self):
-        source_dir = self.setting.get_source_dir()
-        if source_dir is None:
-            wx.MessageBox("源文件夹未设置，请先打开[config.ini]设置[sourceDir]", "提示", wx.OK | wx.ICON_WARNING)
-            return False
-        if not os.path.isdir(source_dir):
-            wx.MessageBox("源文件夹不存在，请先打开[config.ini]设置[sourceDir]", "提示", wx.OK | wx.ICON_WARNING)
-            return False
-        self.index_tool.build_index(source_dir).save()
-        return True
 
 
 if __name__ == '__main__':
