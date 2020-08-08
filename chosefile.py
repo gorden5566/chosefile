@@ -131,6 +131,7 @@ class ChoseFile(wx.Frame):
 
         file_name = self.file_name_text.GetValue()
         target_path = self.target_dir_text.GetValue()
+        self.logger.Log("[清单文件]\t" + file_name)
         self.logger.Log("[目标文件夹]\t" + target_path)
 
         # 解析清单文件
