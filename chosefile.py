@@ -121,6 +121,10 @@ class ChoseFile(wx.Frame):
             wx.MessageBox("请先选择目标地址", "处理结果", wx.OK | wx.ICON_WARNING)
             return
 
+        if not os.path.isdir(target_path):
+            wx.MessageBox("目标文件夹不存在", "处理结果", wx.OK | wx.ICON_WARNING)
+            return
+
         self.logger.Log("[目标文件夹]\t" + target_path)
 
         name_arr = self.parser.parse_excel(file_name, self.setting.get_column_title())
