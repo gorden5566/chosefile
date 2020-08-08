@@ -96,34 +96,44 @@ class ChoseFile(wx.Frame):
             self.target_dir_text.SetValue(dialog.GetPath())
         dialog.Destroy()
 
-    # 复制文件
-    def on_process(self, event):
+    def pre_check(self):
         # 检查索引是否存在，若不存在则构建
         pre_check_result = self.processor.pre_check()
         if not pre_check_result:
             wx.MessageBox("构建索引失败，请检查日志提示信息", "处理结果", wx.OK | wx.ICON_WARNING)
-            return
+            return False
 
         file_name = self.file_name_text.GetValue()
         if file_name is None or file_name == '':
             wx.MessageBox("请先选择清单文件", "处理结果", wx.OK | wx.ICON_WARNING)
-            return
+            return False
 
         if not os.path.exists(file_name):
             wx.MessageBox("文件不存在: " + file_name, "处理结果", wx.OK | wx.ICON_WARNING)
-            return
+            return False
 
         target_path = self.target_dir_text.GetValue()
         if target_path is None or target_path == '':
             wx.MessageBox("请先选择目标地址", "处理结果", wx.OK | wx.ICON_WARNING)
-            return
+            return False
 
         if not os.path.isdir(target_path):
             wx.MessageBox("目标文件夹不存在", "处理结果", wx.OK | wx.ICON_WARNING)
+            return False
+
+        return True
+
+    # 复制文件
+    def on_process(self, event):
+        # 检查条件
+        if not self.pre_check():
             return
 
+        file_name = self.file_name_text.GetValue()
+        target_path = self.target_dir_text.GetValue()
         self.logger.Log("[目标文件夹]\t" + target_path)
 
+        # 解析清单文件
         name_arr = self.parser.parse_excel(file_name, self.setting.get_column_title())
         if name_arr is None:
             wx.MessageBox("解析结果为空", "处理结果", wx.OK | wx.ICON_WARNING)
@@ -132,6 +142,7 @@ class ChoseFile(wx.Frame):
         # 执行处理流程
         process_result = self.processor.process(target_path, name_arr)
 
+        # 结果提示
         message = "共处理" + str(process_result["total"]) + "个文件，处理成功" + str(process_result["success_num"]) + "个"
         wx.MessageBox(message, "处理结果", wx.OK | wx.ICON_INFORMATION)
 
