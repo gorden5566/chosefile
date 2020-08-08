@@ -16,11 +16,14 @@ class ChoseFile(wx.Frame):
         super().__init__(parent=None, title='ChoseFile', size=(640, 505),
                          style=wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX | wx.CLIP_CHILDREN)
 
+        # ui
+        self.init_ui()
+
         # config
         self.setting = Setting()
 
-        # ui
-        self.init_ui()
+        # default
+        self.init_default(self.setting)
 
         # logger
         self.logger = Logger(self.console_text)
@@ -30,8 +33,6 @@ class ChoseFile(wx.Frame):
 
         # processor
         self.processor = Processor(self.logger, self.setting)
-
-        self.init_default()
 
     def init_ui(self):
         # panel
@@ -43,12 +44,12 @@ class ChoseFile(wx.Frame):
         # status bar
         self.make_status_bar()
 
-    def init_default(self):
-        excel_path = self.setting.get_excel_path()
+    def init_default(self, setting):
+        excel_path = setting.get_excel_path()
         if excel_path is not None:
             self.file_name_text.SetValue(excel_path)
 
-        target_dir = self.setting.get_target_dir()
+        target_dir = setting.get_target_dir()
         if target_dir is not None:
             self.target_dir_text.SetValue(target_dir)
 
@@ -95,6 +96,7 @@ class ChoseFile(wx.Frame):
             self.target_dir_text.SetValue(dialog.GetPath())
         dialog.Destroy()
 
+    # 复制文件
     def on_process(self, event):
         # 检查索引是否存在，若不存在则构建
         pre_check_result = self.processor.pre_check()
