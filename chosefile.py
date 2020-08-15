@@ -90,7 +90,7 @@ class ChoseFile(wx.Frame):
         self.clear_btn.Bind(wx.EVT_BUTTON, self.on_clear_console_content)
 
         # 控制台
-        self.console_text = wx.TextCtrl(self.panel, pos=(10, 130), size=(605, 315), style=wx.TE_MULTILINE | wx.TE_READONLY)
+        self.console_text = wx.TextCtrl(self.panel, pos=(10, 130), size=(615, 325), style=wx.TE_MULTILINE | wx.TE_READONLY)
 
     # 打开文件
     def on_select(self, event):
