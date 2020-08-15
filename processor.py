@@ -22,8 +22,9 @@ class Processor:
         if not os.path.isdir(source_dir):
             self.logger.Log("源文件夹不存在，请先打开[config.ini]设置[sourceDir]")
             return False
+        self.logger.Log("[开始构建索引]\t" + source_dir)
         self.index_tool.build_index(source_dir).save()
-        self.logger.Log("[构建索引]\t" + source_dir)
+        self.logger.Log("[构建索引成功]\t" + source_dir)
         return True
 
     # 前置检查
@@ -60,6 +61,7 @@ class Processor:
         return False
 
     def process(self, target_path, name_arr):
+        self.logger.Log("[索引文件夹]\t" + self.index_tool.get_base_path())
         # 复制文件
         total = 0
         success_num = 0

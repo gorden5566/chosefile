@@ -24,9 +24,14 @@ class IndexTool:
 
     # 检查索引文件是否存在
     def check_db(self):
-        if os.path.exists(self.db_name):
+        if not os.path.exists(self.db_name):
+            return False
+
+        try:
+            self.load()
             return True
-        return False
+        except Exception:
+            return False
 
     # 查找文件
     def find(self, name):
