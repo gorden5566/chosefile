@@ -17,7 +17,7 @@ class Parser:
         title_pos = self.find_title(sheet, column_title)
 
         if title_pos is None:
-            self.logger.Log("[解析excel失败]\t" + column_title)
+            self.logger.Log("[解析excel失败]\t请检查[columnTitle = " + column_title + "]配置是否正确")
             return None
 
         title_col = title_pos["col"]
