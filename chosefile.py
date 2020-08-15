@@ -13,7 +13,7 @@ from setting import Setting
 
 class ChoseFile(wx.Frame):
     def __init__(self):
-        super().__init__(parent=None, title='ChoseFile', size=(640, 505),
+        super().__init__(parent=None, title='ChoseFile', size=(640, 535),
                          style=wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX | wx.CLIP_CHILDREN)
 
         # ui
