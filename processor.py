@@ -20,7 +20,7 @@ class Processor:
             self.logger.Log("[未选择图库文件夹]\t可直接点击按钮选择，或者打开[config.ini]设置[sourceDir]并重启应用")
             return False
         if not os.path.isdir(source_dir):
-            self.logger.Log("[图库文件夹不存在]\t可直接点击按钮选择，或者[config.ini]设置[sourceDir]并重启应用")
+            self.logger.Log("[图库文件夹不存在]\t可直接点击按钮选择，或者打开[config.ini]设置[sourceDir]并重启应用")
             return False
         self.logger.Log("[开始构建索引]\t" + source_dir)
         self.index_tool.build_index(source_dir).save()
