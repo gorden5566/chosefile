@@ -103,7 +103,7 @@ class ChoseFile(wx.Frame):
 
     # 源文件夹
     def on_source(self, event):
-        dialog = wx.DirDialog(self, message="请选择源文件夹", defaultPath=self.setting.get_source_dir(),
+        dialog = wx.DirDialog(self, message="请选择图库文件夹", defaultPath=self.setting.get_source_dir(),
                               style=wx.DD_DEFAULT_STYLE)
         if dialog.ShowModal() == wx.ID_OK:
             self.source_dir_text.SetValue(dialog.GetPath())
@@ -128,20 +128,20 @@ class ChoseFile(wx.Frame):
 
         file_name = self.file_name_text.GetValue()
         if file_name is None or file_name == '':
-            wx.MessageBox("请先选择清单文件", "处理结果", wx.OK | wx.ICON_WARNING)
+            wx.MessageBox("请先选择清单文件", "未选择清单文件", wx.OK | wx.ICON_WARNING)
             return False
 
         if not os.path.exists(file_name):
-            wx.MessageBox("文件不存在: " + file_name, "处理结果", wx.OK | wx.ICON_WARNING)
+            wx.MessageBox("清单文件：" + file_name, "清单文件不存在", wx.OK | wx.ICON_WARNING)
             return False
 
         target_path = self.target_dir_text.GetValue()
         if target_path is None or target_path == '':
-            wx.MessageBox("请先选择目标地址", "处理结果", wx.OK | wx.ICON_WARNING)
+            wx.MessageBox("请先选择目标地址", "未选择目标地址", wx.OK | wx.ICON_WARNING)
             return False
 
         if not os.path.isdir(target_path):
-            wx.MessageBox("目标文件夹不存在", "处理结果", wx.OK | wx.ICON_WARNING)
+            wx.MessageBox("目标文件夹：" + target_path, "目标文件夹不存在", wx.OK | wx.ICON_WARNING)
             return False
 
         return True
