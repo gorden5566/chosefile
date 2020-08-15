@@ -8,7 +8,7 @@ import os
 class Logger:
     def __init__(self, console_content):
         self.console_content = console_content
-        self.file_logger = self.create_file_logger()
+        self.file_logger = None
 
     @staticmethod
     def create_file_logger():
@@ -17,9 +17,13 @@ class Logger:
         return f
 
     def close(self):
-        self.file_logger.close()
+        if self.file_logger is not None:
+            self.file_logger.close()
 
     def Log(self, message):
+        if self.file_logger is None:
+            self.file_logger = self.create_file_logger()
+
         now = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         format_message = now + "\t" + message + "\n"
 
