@@ -49,6 +49,10 @@ class ChoseFile(wx.Frame):
         if excel_path is not None:
             self.file_name_text.SetValue(excel_path)
 
+        source_dir = setting.get_source_dir()
+        if source_dir is not None:
+            self.source_dir_text.SetValue(source_dir)
+
         target_dir = setting.get_target_dir()
         if target_dir is not None:
             self.target_dir_text.SetValue(target_dir)
@@ -56,30 +60,37 @@ class ChoseFile(wx.Frame):
     def make_panel(self):
         self.panel=wx.Panel(self, size=(640, 505))
 
-        # 选择文件按钮
-        self.select_btn = wx.Button(self.panel, label='选择清单', pos=(10, 10), size=(80, 25))
+        # 源地址
+        self.source_btn = wx.Button(self.panel, label='图库文件夹', pos=(10, 10), size=(85, 25))
+        self.source_btn.Bind(wx.EVT_BUTTON, self.on_source)
+
+        # 已选择的源地址
+        self.source_dir_text = wx.TextCtrl(self.panel, pos=(105, 10), size=(400, 25), style=wx.TE_READONLY)
+
+        # 清单文件
+        self.select_btn = wx.Button(self.panel, label='清单文件', pos=(10, 40), size=(85, 25))
         self.select_btn.Bind(wx.EVT_BUTTON, self.on_select)
 
-        # 已选择的文件
-        self.file_name_text = wx.TextCtrl(self.panel, pos=(105, 10), size=(400, 25), style=wx.TE_READONLY)
+        # 已选择的清单文件
+        self.file_name_text = wx.TextCtrl(self.panel, pos=(105, 40), size=(400, 25), style=wx.TE_READONLY)
 
         # 目标地址
-        self.target_btn = wx.Button(self.panel, label='目标地址', pos=(10, 40), size=(80, 25))
+        self.target_btn = wx.Button(self.panel, label='目标文件夹', pos=(10, 70), size=(85, 25))
         self.target_btn.Bind(wx.EVT_BUTTON, self.on_target)
 
         # 已选择的目标地址
-        self.target_dir_text = wx.TextCtrl(self.panel, pos=(105, 40), size=(400, 25), style=wx.TE_READONLY)
+        self.target_dir_text = wx.TextCtrl(self.panel, pos=(105, 70), size=(400, 25), style=wx.TE_READONLY)
 
         # 处理文件
-        self.process_btn = wx.Button(self.panel, label='批量复制', pos=(10, 70), size=(80, 25))
+        self.process_btn = wx.Button(self.panel, label='批量复制', pos=(10, 100), size=(85, 25))
         self.process_btn.Bind(wx.EVT_BUTTON, self.on_process)
 
         # 清空控制台日志
-        self.clear_btn = wx.Button(self.panel, label='清空日志', pos=(105, 70), size=(80, 25))
+        self.clear_btn = wx.Button(self.panel, label='清空日志', pos=(105, 100), size=(85, 25))
         self.clear_btn.Bind(wx.EVT_BUTTON, self.on_clear_console_content)
 
         # 控制台
-        self.console_text = wx.TextCtrl(self.panel, pos=(10, 100), size=(605, 345), style=wx.TE_MULTILINE | wx.TE_READONLY)
+        self.console_text = wx.TextCtrl(self.panel, pos=(10, 130), size=(605, 315), style=wx.TE_MULTILINE | wx.TE_READONLY)
 
     # 打开文件
     def on_select(self, event):
@@ -90,17 +101,27 @@ class ChoseFile(wx.Frame):
             self.file_name_text.SetValue(dialog.GetPath())
             dialog.Destroy
 
-    # 打开文件
+    # 源文件夹
+    def on_source(self, event):
+        dialog = wx.DirDialog(self, message="请选择源文件夹", defaultPath=self.setting.get_source_dir(),
+                              style=wx.DD_DEFAULT_STYLE)
+        if dialog.ShowModal() == wx.ID_OK:
+            self.source_dir_text.SetValue(dialog.GetPath())
+        dialog.Destroy()
+
+    # 目标文件夹
     def on_target(self, event):
-        dialog = wx.DirDialog(self, message="请选择要保存的路径", defaultPath=self.setting.get_target_dir(),
+        dialog = wx.DirDialog(self, message="请选择目标文件夹", defaultPath=self.setting.get_target_dir(),
                               style=wx.DD_DEFAULT_STYLE)
         if dialog.ShowModal() == wx.ID_OK:
             self.target_dir_text.SetValue(dialog.GetPath())
         dialog.Destroy()
 
     def pre_check(self):
+        source_path = self.source_dir_text.GetValue()
+
         # 检查索引是否存在，若不存在则构建
-        pre_check_result = self.processor.pre_check()
+        pre_check_result = self.processor.pre_check(source_path)
         if not pre_check_result:
             wx.MessageBox("构建索引失败，请检查日志提示信息", "处理结果", wx.OK | wx.ICON_WARNING)
             return False
@@ -207,7 +228,9 @@ class ChoseFile(wx.Frame):
 
     # 重建索引设置
     def on_build_index(self, event):
-        result = self.processor.build_index()
+        source_path = self.source_dir_text.GetValue()
+
+        result = self.processor.build_index(source_path)
         if result:
             wx.MessageBox("重建索引成功", "提示", wx.OK | wx.ICON_INFORMATION)
         else:

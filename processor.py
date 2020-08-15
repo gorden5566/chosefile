@@ -15,8 +15,7 @@ class Processor:
         self.index_tool = IndexTool(self.setting.get_max_depth())
 
     # 构建索引
-    def build_index(self):
-        source_dir = self.setting.get_source_dir()
+    def build_index(self, source_dir):
         if source_dir is None:
             self.logger.Log("源文件夹未设置，请先打开[config.ini]设置[sourceDir]")
             return False
@@ -28,11 +27,11 @@ class Processor:
         return True
 
     # 前置检查
-    def pre_check(self):
+    def pre_check(self, source_path):
         # 检查索引是否存在，若不存在则构建
         has_build_db = self.index_tool.check_db()
         if not has_build_db:
-            return self.build_index()
+            return self.build_index(source_path)
         return True
 
     # 复制文件
