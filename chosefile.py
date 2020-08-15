@@ -6,7 +6,7 @@ import os
 import wx
 
 from logger import Logger
-from parser import Parser
+from parsers import Parser
 from processor import Processor
 from setting import Setting
 
