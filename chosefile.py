@@ -54,30 +54,32 @@ class ChoseFile(wx.Frame):
             self.target_dir_text.SetValue(target_dir)
 
     def make_panel(self):
+        self.panel=wx.Panel(self, size=(640, 505))
+
         # 选择文件按钮
-        self.select_btn = wx.Button(self, label='选择清单', pos=(10, 10), size=(80, 25))
+        self.select_btn = wx.Button(self.panel, label='选择清单', pos=(10, 10), size=(80, 25))
         self.select_btn.Bind(wx.EVT_BUTTON, self.on_select)
 
         # 已选择的文件
-        self.file_name_text = wx.TextCtrl(self, pos=(105, 10), size=(400, 25), style=wx.TE_READONLY)
+        self.file_name_text = wx.TextCtrl(self.panel, pos=(105, 10), size=(400, 25), style=wx.TE_READONLY)
 
         # 目标地址
-        self.target_btn = wx.Button(self, label='目标地址', pos=(10, 40), size=(80, 25))
+        self.target_btn = wx.Button(self.panel, label='目标地址', pos=(10, 40), size=(80, 25))
         self.target_btn.Bind(wx.EVT_BUTTON, self.on_target)
 
         # 已选择的目标地址
-        self.target_dir_text = wx.TextCtrl(self, pos=(105, 40), size=(400, 25), style=wx.TE_READONLY)
+        self.target_dir_text = wx.TextCtrl(self.panel, pos=(105, 40), size=(400, 25), style=wx.TE_READONLY)
 
         # 处理文件
-        self.process_btn = wx.Button(self, label='批量复制', pos=(10, 70), size=(80, 25))
+        self.process_btn = wx.Button(self.panel, label='批量复制', pos=(10, 70), size=(80, 25))
         self.process_btn.Bind(wx.EVT_BUTTON, self.on_process)
 
         # 清空控制台日志
-        self.clear_btn = wx.Button(self, label='清空日志', pos=(105, 70), size=(80, 25))
+        self.clear_btn = wx.Button(self.panel, label='清空日志', pos=(105, 70), size=(80, 25))
         self.clear_btn.Bind(wx.EVT_BUTTON, self.on_clear_console_content)
 
         # 控制台
-        self.console_text = wx.TextCtrl(self, pos=(10, 100), size=(605, 315), style=wx.TE_MULTILINE | wx.TE_READONLY)
+        self.console_text = wx.TextCtrl(self.panel, pos=(10, 100), size=(605, 345), style=wx.TE_MULTILINE | wx.TE_READONLY)
 
     # 打开文件
     def on_select(self, event):
