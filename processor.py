@@ -17,10 +17,10 @@ class Processor:
     # 构建索引
     def build_index(self, source_dir):
         if source_dir is None:
-            self.logger.Log("源文件夹未设置，请先打开[config.ini]设置[sourceDir]")
+            self.logger.Log("[未选择图库文件夹]\t可直接点击按钮选择，或者打开[config.ini]设置[sourceDir]并重启应用")
             return False
         if not os.path.isdir(source_dir):
-            self.logger.Log("源文件夹不存在，请先打开[config.ini]设置[sourceDir]")
+            self.logger.Log("[图库文件夹不存在]\t可直接点击按钮选择，或者[config.ini]设置[sourceDir]并重启应用")
             return False
         self.logger.Log("[开始构建索引]\t" + source_dir)
         self.index_tool.build_index(source_dir).save()
