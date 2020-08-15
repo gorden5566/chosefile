@@ -87,7 +87,7 @@ class Setting:
             "maxDepth = 5\n"
         ]
         content = "".join(content_arr)
-        with open(config_path, 'w') as configfile:
+        with open(config_path, 'w', encoding='utf-8') as configfile:
             configfile.write(content)
             configfile.close()
 
