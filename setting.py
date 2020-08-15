@@ -87,8 +87,9 @@ class Setting:
             "maxDepth = 5\n"
         ]
         content = "".join(content_arr)
-        with open('config.ini', 'w') as configfile:
+        with open(config_path, 'w') as configfile:
             configfile.write(content)
+            configfile.close()
 
     def get_config_val(self, conf, section, key, default):
         try:
