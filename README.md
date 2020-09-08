@@ -1,5 +1,7 @@
 # chosefile
 
+![image](screenshot/index.jpg)
+
 打包命令
 
 ```python
