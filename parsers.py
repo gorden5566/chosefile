@@ -26,7 +26,7 @@ class Parser:
         name_arr = []
         for row_index in range(title_row + 1, sheet.nrows):
             name = sheet.cell_value(row_index, title_col)
-            strip_name = name.replace(' ', '')
+            strip_name = name.strip(' ')
             if strip_name == '':
                 continue
             name_arr.append(strip_name)
