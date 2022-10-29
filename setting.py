@@ -8,37 +8,39 @@ import os
 class Setting:
 
     def __init__(self):
-        self.config = self.get_config("config.ini")
+        self.config_name = "config.ini"
+        self.section = "default"
+        self.config = self.build_config()
 
     def get_source_dir(self):
         if self.has_not_config():
             return os.getcwd()
-        return self.config.get("sourceDir")
+        return self.config.get(self.section, "sourceDir")
 
     def get_target_dir(self):
         if self.has_not_config():
             return os.getcwd()
-        return self.config.get("targetDir")
+        return self.config.get(self.section, "targetDir")
 
     def get_ext_name(self):
         if self.has_not_config():
             return ".dwg"
-        return self.config.get("extName")
+        return self.config.get(self.section, "extName")
 
     def get_column_title(self):
         if self.has_not_config():
             return "图号"
-        return self.config.get("columnTitle")
+        return self.config.get(self.section, "columnTitle")
 
     def get_excel_path(self):
         if self.has_not_config():
             return ""
-        return self.config.get("excelPath")
+        return self.config.get(self.section, "excelPath")
 
     def get_max_depth(self):
         if self.has_not_config():
             return 5
-        depth = self.config.get("maxDepth")
+        depth = self.config.get(self.section, "maxDepth")
         try:
             return int(depth)
         except ValueError:
@@ -50,25 +52,40 @@ class Setting:
         return False
 
     # 读取配置文件
-    def get_config(self, config_name):
+    def build_config(self):
         current_path = os.getcwd()
-        config_path = os.path.join(current_path, config_name)
+        config_path = os.path.join(current_path, self.config_name)
         if not os.path.exists(config_path):
             self.init_config(config_path)
 
         conf = configparser.ConfigParser()
         conf.read(config_path, encoding="utf-8")
+        return conf
 
-        section = "default"
-        config = {'sourceDir': self.get_config_val(conf, section, "sourceDir", ""),
-                  'targetDir': self.get_config_val(conf, section, "targetDir", ""),
-                  'extName': self.get_config_val(conf, section, "extName", ".dwg"),
-                  'columnTitle': self.get_config_val(conf, section, "columnTitle", "图号"),
-                  'excelPath': self.get_config_val(conf, section, "excelPath", ""),
-                  'maxDepth': self.get_config_val(conf, section, "maxDepth", 5)
-                  }
+    # 设置配置
+    def set_config(self, key, value):
+        self.config.set(self.section, key, value)
 
-        return config
+    # 设置图库文件夹
+    def set_source_dir(self, dir):
+        self.config.set(self.section, "sourceDir", dir)
+
+    # 设置清单文件
+    def set_excel_file(self, dir):
+        self.config.set(self.section, "excelPath", dir)
+
+    # 设置目标文件夹
+    def set_target_dir(self, dir):
+        self.config.set(self.section, "targetDir", dir)
+
+    # 保存配置
+    def save_config(self):
+        current_path = os.getcwd()
+        config_path = os.path.join(current_path, self.config_name)
+        with open(config_path, 'w', encoding='utf-8') as configfile:
+            self.config.write(configfile)
+
+        return True
 
     def init_config(self, config_path):
         content_arr = [

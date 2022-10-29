@@ -258,6 +258,9 @@ class ChoseFile(wx.Frame):
         build_index_item = setting_menu.Append(-1, "&重建索引\tCtrl-B", "修改源文件路径[sourceDir]后，需要重新构建文件索引")
         self.Bind(wx.EVT_MENU, self.on_build_index, build_index_item)
 
+        save_config_item = setting_menu.Append(-1, "&保存配置\tCtrl-S", "将当前选择的路径保存到配置中")
+        self.Bind(wx.EVT_MENU, self.on_save_config, save_config_item)
+
         return setting_menu
 
     # 重建索引设置
@@ -271,6 +274,29 @@ class ChoseFile(wx.Frame):
             wx.MessageBox("重建索引成功", "提示", wx.OK | wx.ICON_INFORMATION)
         else:
             wx.MessageBox("重建索引失败", "提示", wx.OK | wx.ICON_WARNING)
+
+    # 保存配置
+    def on_save_config(self, event):
+        # 图库文件夹
+        source_path = self.source_dir_text.GetValue()
+        self.setting.set_source_dir(source_path)
+
+        # 清单文件
+        file_name = self.file_name_text.GetValue()
+        self.setting.set_excel_file(file_name)
+
+        # 目标文件夹
+        target_path = self.target_dir_text.GetValue()
+        self.setting.set_target_dir(target_path)
+
+        # 保存配置
+        result = self.setting.save_config()
+        if result:
+            self.logger.Log("保存配置成功！")
+            wx.MessageBox("保存配置成功！", "提示", wx.OK | wx.ICON_INFORMATION)
+        else:
+            self.logger.Log("保存配置失败！")
+            wx.MessageBox("保存配置失败！", "提示", wx.OK | wx.ICON_WARNING)
 
     # 帮助菜单
     def make_help_menu(self):
