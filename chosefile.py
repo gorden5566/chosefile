@@ -89,6 +89,13 @@ class ChoseFile(wx.Frame):
         self.clear_btn = wx.Button(self.panel, label='清空日志', pos=(105, 100), size=(85, 25))
         self.clear_btn.Bind(wx.EVT_BUTTON, self.on_clear_console_content)
 
+        # 搜索文件
+        self.search_btn = wx.Button(self.panel, label='搜索图库', pos=(210, 100), size=(85, 25))
+        self.search_btn.Bind(wx.EVT_BUTTON, self.on_search)
+
+        # 搜索的文件名
+        self.search_text = wx.TextCtrl(self.panel, pos=(310, 100), size=(195, 25))
+
         # 控制台
         self.console_text = wx.TextCtrl(self.panel, pos=(10, 130), size=(615, 325), style=wx.TE_MULTILINE | wx.TE_READONLY)
 
@@ -172,6 +179,33 @@ class ChoseFile(wx.Frame):
 
         return
 
+    # 搜索图库文件
+    def on_search(self, event):
+        # 检查条件
+        file_name = self.search_text.GetValue()
+        if file_name is None or file_name == '':
+            wx.MessageBox("请在右侧输入文件名", "未输入文件名", wx.OK | wx.ICON_WARNING)
+            return
+
+        self.logger.Log("--------------------------------------------------------------------")
+
+        # 扩展名
+        ext_name = self.setting.get_ext_name()
+
+        # 组装文件名
+        source_name = file_name
+        if not file_name.endswith(ext_name):
+            source_name = file_name + self.setting.get_ext_name()
+
+        self.logger.Log("[搜索图库]\t" + source_name)
+        source_path = self.processor.get_source_path(source_name)
+        if source_path is None:
+            self.logger.Log("[搜索结果]\t" + ">_< 未搜索到！")
+            self.logger.Log("--------------------------------------------------------------------")
+            return
+        self.logger.Log("[搜索结果]\t" + os.path.join(source_path, source_name))
+        self.logger.Log("--------------------------------------------------------------------")
+
     def on_clear_console_content(self, event):
         self.console_text.SetValue("")
         # wx.MessageBox("已清空", "处理结果", wx.OK | wx.ICON_INFORMATION)
@@ -228,8 +262,10 @@ class ChoseFile(wx.Frame):
 
     # 重建索引设置
     def on_build_index(self, event):
+        # 获取图库文件夹
         source_path = self.source_dir_text.GetValue()
 
+        # 重建索引
         result = self.processor.build_index(source_path)
         if result:
             wx.MessageBox("重建索引成功", "提示", wx.OK | wx.ICON_INFORMATION)
