@@ -114,6 +114,8 @@ class ChoseFile(wx.Frame):
                               style=wx.DD_DEFAULT_STYLE)
         if dialog.ShowModal() == wx.ID_OK:
             self.source_dir_text.SetValue(dialog.GetPath())
+            # 更换图库路径时重新构建索引
+            self.on_build_index(None)
         dialog.Destroy()
 
     # 目标文件夹
