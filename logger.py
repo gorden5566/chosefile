@@ -36,7 +36,7 @@ class Logger:
         if self.file_logger is None:
             self.file_logger = self.create_file_logger()
 
-        format_message = message + "\n"
+        format_message = message
 
         self.console_content.AppendText(format_message)
 

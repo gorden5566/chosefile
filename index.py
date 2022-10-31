@@ -72,26 +72,35 @@ class IndexTool:
         index = self.index_file.get_index()
 
         self.logger.Log("--------------------------------------------------------------------")
-        self.do_print_index(index)
+        depth = 0
+        self.do_print_index(index, depth)
         self.logger.Log("--------------------------------------------------------------------")
         return
 
-    def do_print_index(self, index):
+    def do_print_index(self, index, depth):
         if index is None:
             return
 
+        pre_str = ""
+        for num in range(1, depth):
+            pre_str = pre_str + "\t"
+        
         # 文件
         if not index.get_isdir():
-            self.logger.raw_log(os.path.join(index.get_path(), index.get_name()))
+            self.logger.raw_log(pre_str + "├─" + index.get_name() + "\n")
             return
 
         # 文件夹
+        if index.get_name() == "":
+            self.logger.raw_log(".\n")
+        else:
+            self.logger.raw_log(pre_str + "├─" + index.get_name() + "\n")
         next_level = index.get_next()
         if next_level is None:
             return None
 
         for i in next_level:
-            self.do_print_index(i)
+            self.do_print_index(i, depth + 1)
 
         return
 
@@ -116,6 +125,7 @@ class IndexTool:
         path_with_name = os.path.join(self.index_file.get_base_path(), parent_path, path, name)
 
         files = os.listdir(path_with_name)
+        files.sort()
         for file in files:
             if file[0] == '.':
                 continue
