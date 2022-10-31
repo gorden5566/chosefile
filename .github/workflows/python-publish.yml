@@ -3,6 +3,7 @@ name: Upload a Build Artifact
 on:
   push:
     branches: [master]
+  workflow_dispatch
 
 permissions:
   contents: read
