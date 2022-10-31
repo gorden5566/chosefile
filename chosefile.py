@@ -245,6 +245,9 @@ class ChoseFile(wx.Frame):
         export_item = file_menu.Append(-1, "&导出模板\tCtrl-E", "导出模板文件")
         self.Bind(wx.EVT_MENU, self.on_export_template, export_item)
 
+        print_index_item = file_menu.Append(-1, "&查看索引\tCtrl-I", "查看索引内容")
+        self.Bind(wx.EVT_MENU, self.on_print_index, print_index_item)
+
         # 分隔符
         file_menu.AppendSeparator()
 
@@ -329,6 +332,9 @@ class ChoseFile(wx.Frame):
 
             save_msg.ShowModal()
             save_msg.Destroy()
+
+    def on_print_index(self, event):
+        self.processor.print_index()
 
     # 使用说明
     def on_usage(self, event):

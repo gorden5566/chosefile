@@ -31,6 +31,17 @@ class Logger:
 
         self.file_logger.write(format_message)
 
+    # 输出原始日志
+    def raw_log(self, message):
+        if self.file_logger is None:
+            self.file_logger = self.create_file_logger()
+
+        format_message = message + "\n"
+
+        self.console_content.AppendText(format_message)
+
+        self.file_logger.write(format_message)
+
     def log_failed(self, file_path, failed_files):
         if not failed_files:
             return None

@@ -12,7 +12,7 @@ class Processor:
     def __init__(self, logger, setting):
         self.logger = logger
         self.setting = setting
-        self.index_tool = IndexTool(self.setting.get_max_depth())
+        self.index_tool = IndexTool(self.setting.get_max_depth(), logger)
 
     # 构建索引
     def build_index(self, source_dir):
@@ -109,3 +109,8 @@ class Processor:
         sheet.write(1, 0, "1-1")
 
         workbook.save(file_name)
+
+    # 打印索引内容
+    def print_index(self):
+        self.index_tool.print_index()
+

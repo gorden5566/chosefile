@@ -6,8 +6,9 @@ import pickle
 
 
 class IndexTool:
-    def __init__(self, max_depth):
+    def __init__(self, max_depth, logger):
         self.max_depth = max_depth
+        self.logger = logger
         self.index_file = None
         self.db_name = "index.db"
         pass
@@ -63,6 +64,36 @@ class IndexTool:
                 return result
 
         return None
+
+    # 打印索引
+    def print_index(self):
+        if self.index_file is None:
+            self.load()
+        index = self.index_file.get_index()
+
+        self.logger.Log("--------------------------------------------------------------------")
+        self.do_print_index(index)
+        self.logger.Log("--------------------------------------------------------------------")
+        return
+
+    def do_print_index(self, index):
+        if index is None:
+            return
+
+        # 文件
+        if not index.get_isdir():
+            self.logger.raw_log(os.path.join(index.get_path(), index.get_name()))
+            return
+
+        # 文件夹
+        next_level = index.get_next()
+        if next_level is None:
+            return None
+
+        for i in next_level:
+            self.do_print_index(i)
+
+        return
 
     # 构建索引
     def build_index(self, path):
