@@ -27,5 +27,5 @@ jobs:
       run: pyinstaller -F chosefile.py --noconsole
     - uses: actions/upload-artifact@v3
       with:
-        name: Chosefile
+        name: Chosefile.exe
         path: ./dist/chosefile.exe
